@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ReCyclo — Jogo de Evolução Sustentável</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ░░░ PARTICLE CANVAS ░░░ -->
+<canvas id="particle-bg"></canvas>
+
+<!-- ░░░ TOAST NOTIFICATIONS ░░░ -->
+<div id="toast-container"></div>
+
+<!-- ░░░ XP POPUP ░░░ -->
+<div id="xp-popup" class="xp-popup hidden"></div>
+
+<!-- ════════════════════════════════════
+     SCREEN: ONBOARDING
+═════════════════════════════════════ -->
+<section id="screen-onboarding" class="screen active">
+  <div class="onboard-bg-grid"></div>
+  <div class="onboard-content">
+    <div class="game-logo">
+      <div class="logo-glow"></div>
+      <span class="logo-icon">♻</span>
+      <div class="logo-words">
+        <span class="logo-main">ReCyclo</span>
+        <span class="logo-sub">Survival Edition</span>
+      </div>
+    </div>
+
+    <div class="mascot-intro" id="mascot-intro">
+      <div class="mascot-body" id="mascot-onboard">
+        <div class="mascot-face" id="mascot-face-onboard">
+          <div class="mascot-eyes"><span class="eye"></span><span class="eye"></span></div>
+          <div class="mascot-mouth happy"></div>
+        </div>
+        <div class="mascot-arms">
+          <span class="arm arm-l">🌿</span>
+          <span class="arm arm-r">🌿</span>
+        </div>
+      </div>
+      <div class="speech-bubble" id="bubble-onboard">
+        Olá! Sou o <strong>Recyclinho</strong>! Vamos salvar o planeta juntos? 🌍
+      </div>
+    </div>
+
+    <h1 class="hero-title">Seu planeta.<br><em>Sua missão.</em></h1>
+    <p class="hero-desc">Um jogo de evolução onde cada decisão molda o futuro do meio ambiente — e o seu perfil.</p>
+
+    <div class="onboard-stats">
+      <div class="stat-pill">🎮 Sistema de missões</div>
+      <div class="stat-pill">⚡ Decisões em tempo real</div>
+      <div class="stat-pill">🏆 10 níveis de evolução</div>
+    </div>
+
+    <button id="btn-new-game" class="btn-primary btn-glow">
+      <span class="btn-icon">▶</span> Novo Jogo
+    </button>
+    <button id="btn-continue" class="btn-secondary hidden">
+      <span class="btn-icon">↩</span> Continuar Jogo
+    </button>
+    <p class="version-tag">v2.0 · Save automático ativo</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     SCREEN: CHARACTER CREATION
+═════════════════════════════════════ -->
+<section id="screen-char" class="screen">
+  <div class="char-wrap">
+    <div class="char-mascot-big">
+      <div class="mascot-body mascot-lg">
+        <div class="mascot-face">
+          <div class="mascot-eyes"><span class="eye"></span><span class="eye"></span></div>
+          <div class="mascot-mouth happy"></div>
+        </div>
+        <div class="mascot-arms">
+          <span class="arm arm-l">👋</span>
+          <span class="arm arm-r">🌱</span>
+        </div>
+      </div>
+    </div>
+    <div class="char-form">
+      <div class="step-tag">PASSO 1 DE 2 — IDENTIDADE</div>
+      <h2 class="char-title">Como devo te chamar?</h2>
+      <input type="text" id="player-name-input" class="name-input" placeholder="Seu nome ou apelido..." maxlength="20"/>
+      <div class="char-avatar-pick">
+        <p class="pick-label">Escolha seu emblema:</p>
+        <div class="avatar-grid">
+          <button class="avatar-opt selected" data-avatar="🌱">🌱</button>
+          <button class="avatar-opt" data-avatar="🌿">🌿</button>
+          <button class="avatar-opt" data-avatar="🍃">🍃</button>
+          <button class="avatar-opt" data-avatar="🌊">🌊</button>
+          <button class="avatar-opt" data-avatar="⚡">⚡</button>
+          <button class="avatar-opt" data-avatar="🔥">🔥</button>
+        </div>
+      </div>
+      <button id="btn-char-next" class="btn-primary" disabled>Continuar →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     SCREEN: QUIZ (DIAGNOSTIC)
+═════════════════════════════════════ -->
+<section id="screen-quiz" class="screen">
+  <div class="quiz-shell">
+    <header class="quiz-hdr">
+      <div class="hdr-logo">♻ ReCyclo</div>
+      <div class="hdr-sync">
+        <span class="sync-dot"></span>
+        <span id="sync-label">Diagnóstico ambiental ativo...</span>
+      </div>
+      <div class="hdr-progress-text"><span id="q-current">1</span>/5</div>
+    </header>
+
+    <div class="quiz-progress-track">
+      <div id="quiz-progress-fill" class="quiz-prog-fill"></div>
+    </div>
+
+    <!-- Mascote flutuante -->
+    <div class="quiz-mascot-float">
+      <div class="mascot-body mascot-sm" id="mascot-quiz">
+        <div class="mascot-face">
+          <div class="mascot-eyes"><span class="eye"></span><span class="eye"></span></div>
+          <div class="mascot-mouth happy" id="quiz-mouth"></div>
+        </div>
+      </div>
+      <div class="speech-bubble speech-sm" id="quiz-bubble">Pense bem antes de responder! 🤔</div>
+    </div>
+
+    <div id="question-card" class="q-card">
+      <div class="q-meta">
+        <span class="q-tag" id="q-tag"></span>
+        <span class="q-xp-reward" id="q-xp">+20 XP</span>
+      </div>
+      <h2 class="q-text" id="q-text"></h2>
+      <div class="q-options" id="q-options"></div>
+    </div>
+
+    <div class="quiz-lore" id="quiz-lore">
+      <span class="lore-icon">💡</span>
+      <span id="lore-text">Cada resposta calibra seu perfil ambiental.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     SCREEN: ANALYSIS LOADING
+═════════════════════════════════════ -->
+<section id="screen-loading" class="screen">
+  <div class="load-inner">
+    <div class="load-mascot">
+      <div class="mascot-body mascot-lg load-bounce">
+        <div class="mascot-face">
+          <div class="mascot-eyes"><span class="eye"></span><span class="eye"></span></div>
+          <div class="mascot-mouth happy"></div>
+        </div>
+        <div class="load-sparkles">
+          <span>✨</span><span>🌿</span><span>⚡</span>
+        </div>
+      </div>
+    </div>
+    <h2 class="load-title" id="load-title">Inicializando perfil...</h2>
+    <div class="load-bar-wrap"><div class="load-bar-fill" id="load-bar"></div></div>
+    <p class="load-sub" id="load-sub">Processando dados ambientais</p>
+    <div class="load-steps" id="load-steps"></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     SCREEN: MAIN GAME (DASHBOARD)
+═════════════════════════════════════ -->
+<section id="screen-game" class="screen">
+
+  <!-- TOP HUD -->
+  <div class="game-hud">
+    <div class="hud-left">
+      <div class="hud-logo">♻</div>
+      <div class="hud-player">
+        <span id="hud-avatar">🌱</span>
+        <span id="hud-name">Jogador</span>
+      </div>
+    </div>
+    <div class="hud-center">
+      <div class="hud-stat">
+        <span class="hud-stat-label">SCORE</span>
+        <span id="hud-score" class="hud-stat-val">0</span>
+      </div>
+      <div class="hud-divider"></div>
+      <div class="hud-stat">
+        <span class="hud-stat-label">LEVEL</span>
+        <span id="hud-level" class="hud-stat-val">1</span>
+      </div>
+      <div class="hud-divider"></div>
+      <div class="hud-stat">
+        <span class="hud-stat-label">XP</span>
+        <span id="hud-xp" class="hud-stat-val">0</span>
+      </div>
+    </div>
+    <div class="hud-right">
+      <div class="hud-streak">
+        🔥 <span id="hud-streak">0</span>
+      </div>
+      <button id="btn-menu" class="hud-btn">☰</button>
+    </div>
+  </div>
+
+  <!-- XP BAR FULL WIDTH -->
+  <div class="xp-global-bar">
+    <div id="xp-global-fill" class="xp-gfill" style="width:0%"></div>
+    <span id="xp-global-label" class="xp-glabel">0 / 200 XP → Level 2</span>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="game-layout">
+
+    <!-- LEFT: CHARACTER + MISSION PANEL -->
+    <aside class="game-aside">
+
+      <!-- Recyclinho -->
+      <div class="char-panel" id="char-panel">
+        <div class="char-panel-bg"></div>
+        <div class="mascot-container">
+          <div class="mascot-body mascot-md" id="mascot-main">
+            <div class="mascot-face">
+              <div class="mascot-eyes"><span class="eye"></span><span class="eye"></span></div>
+              <div class="mascot-mouth happy" id="main-mouth"></div>
+            </div>
+            <div class="mascot-arms">
+              <span class="arm arm-l" id="main-arm-l">🌿</span>
+              <span class="arm arm-r" id="main-arm-r">🌿</span>
+            </div>
+            <div class="mascot-aura" id="mascot-aura"></div>
+          </div>
+          <div class="speech-bubble speech-main" id="main-bubble">
+            Vamos lá! Complete suas missões hoje! 💪
+          </div>
+        </div>
+        <div class="char-mood-label" id="mood-label">😊 Animado</div>
+      </div>
+
+      <!-- ACTIVE MISSION -->
+      <div class="mission-panel" id="mission-panel">
+        <div class="panel-title">
+          <span class="panel-icon">🎯</span> MISSÃO ATIVA
+          <span class="mission-timer" id="mission-timer">24h</span>
+        </div>
+        <div id="active-mission" class="active-mission-card">
+          <div class="am-category" id="am-category">Carregando...</div>
+          <div class="am-title" id="am-title">Buscando missão...</div>
+          <div class="am-desc" id="am-desc"></div>
+          <div class="am-reward">
+            <span>🏆 <span id="am-xp">0</span> XP</span>
+            <span>⚡ +<span id="am-score">0</span> Score</span>
+          </div>
+          <div class="am-actions">
+            <button id="btn-mission-done" class="btn-success">✓ Completei!</button>
+            <button id="btn-mission-skip" class="btn-ghost-sm">✗ Pular</button>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- CENTER: QUICK DECISIONS + STATS -->
+    <main class="game-main">
+
+      <!-- QUICK DECISION CARD -->
+      <div class="decision-card" id="decision-card">
+        <div class="dc-header">
+          <span class="dc-icon">⚡</span>
+          <span class="dc-label">DECISÃO RÁPIDA</span>
+          <span class="dc-ai-tag">IA</span>
+        </div>
+        <p class="dc-question" id="dc-question">Carregando decisão...</p>
+        <div class="dc-context" id="dc-context"></div>
+        <div class="dc-choices" id="dc-choices"></div>
+      </div>
+
+      <!-- ENVIRONMENTAL SCORE CARD -->
+      <div class="env-card">
+        <div class="env-card-title">Score Ambiental</div>
+        <div class="env-score-display">
+          <div class="score-hexagon" id="score-hex">
+            <svg viewBox="0 0 100 100">
+              <polygon class="hex-bg" points="50,3 97,27 97,73 50,97 3,73 3,27"/>
+              <polygon class="hex-fill" id="hex-fill" points="50,3 97,27 97,73 50,97 3,73 3,27"/>
+            </svg>
+            <div class="hex-inner">
+              <span id="env-score-num" class="env-score-num">0</span>
+              <small>/100</small>
+            </div>
+          </div>
+          <div class="env-score-info">
+            <div class="env-class" id="env-class">—</div>
+            <div class="env-indicators">
+              <div class="ei">
+                <span>🧴 Plástico</span>
+                <div class="ei-bar"><div id="bar-p" class="ei-fill" style="width:0%"></div></div>
+              </div>
+              <div class="ei">
+                <span>🌫 Emissão</span>
+                <div class="ei-bar"><div id="bar-e" class="ei-fill warn" style="width:0%"></div></div>
+              </div>
+              <div class="ei">
+                <span>🗑 Desperdício</span>
+                <div class="ei-bar"><div id="bar-w" class="ei-fill danger" style="width:0%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS ROW -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="sc-icon">🎯</div>
+          <div class="sc-val" id="stat-missions">0</div>
+          <div class="sc-label">Missões<br>Completas</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-icon">⚡</div>
+          <div class="sc-val" id="stat-decisions">0</div>
+          <div class="sc-label">Boas<br>Decisões</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-icon">🔥</div>
+          <div class="sc-val" id="stat-streak">0</div>
+          <div class="sc-label">Sequência<br>Atual</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-icon">🌍</div>
+          <div class="sc-val" id="stat-impact">0</div>
+          <div class="sc-label">Impacto<br>Reduzido</div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- RIGHT: MISSIONS + HISTORY -->
+    <aside class="game-right">
+
+      <!-- MISSION LIST -->
+      <div class="panel missions-list-panel">
+        <div class="panel-title"><span class="panel-icon">📋</span> MISSÕES DO DIA</div>
+        <div id="missions-list" class="missions-list"></div>
+        <button id="btn-refresh-missions" class="btn-refresh">↺ Novas missões</button>
+      </div>
+
+      <!-- ACTION HISTORY -->
+      <div class="panel history-panel">
+        <div class="panel-title"><span class="panel-icon">📜</span> HISTÓRICO</div>
+        <div id="action-history" class="action-history"></div>
+      </div>
+
+    </aside>
+
+  </div><!-- /game-layout -->
+
+  <!-- ACHIEVEMENTS RIBBON -->
+  <div class="achievements-ribbon" id="achievements-ribbon">
+    <div class="ribbon-title"><span>🏅</span> CONQUISTAS</div>
+    <div id="achievements-list" class="achv-list"></div>
+  </div>
+
+</section>
+
+<!-- ════════════════════════════════════
+     MODAL: LEVEL UP
+═════════════════════════════════════ -->
+<div id="modal-levelup" class="modal hidden">
+  <div class="modal-content levelup-modal">
+    <div class="lu-burst"></div>
+    <div class="mascot-body mascot-lg lu-mascot">
+      <div class="mascot-face">
+        <div class="mascot-eyes"><span class="eye"></span><span class="eye"></span></div>
+        <div class="mascot-mouth happy"></div>
+      </div>
+      <div class="mascot-arms">
+        <span class="arm arm-l">🎉</span>
+        <span class="arm arm-r">🎉</span>
+      </div>
+    </div>
+    <div class="lu-label">LEVEL UP!</div>
+    <div class="lu-level" id="lu-level">2</div>
+    <div class="lu-title" id="lu-title">Explorador Verde</div>
+    <div class="lu-unlock" id="lu-unlock"></div>
+    <button id="btn-lu-close" class="btn-primary">Continuar missão →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     MODAL: MENU
+═════════════════════════════════════ -->
+<div id="modal-menu" class="modal hidden">
+  <div class="modal-content menu-modal">
+    <h3 class="menu-title">♻ Menu</h3>
+    <div class="menu-profile">
+      <span id="menu-avatar" class="menu-avatar-big">🌱</span>
+      <div>
+        <div id="menu-player-name" class="menu-pname">Jogador</div>
+        <div id="menu-player-title" class="menu-ptitle">Iniciante</div>
+      </div>
+    </div>
+    <div class="menu-stats-grid">
+      <div class="mg-stat"><span id="ms-score">0</span><small>Score</small></div>
+      <div class="mg-stat"><span id="ms-level">1</span><small>Level</small></div>
+      <div class="mg-stat"><span id="ms-xp">0</span><small>XP Total</small></div>
+      <div class="mg-stat"><span id="ms-missions">0</span><small>Missões</small></div>
+    </div>
+    <div class="menu-actions">
+      <button id="btn-menu-recs" class="menu-action-btn">💡 Ver Recomendações</button>
+      <button id="btn-menu-predict" class="menu-action-btn">🔮 Previsão de Impacto</button>
+      <button id="btn-menu-reset" class="menu-action-btn danger">🔄 Recomeçar Jogo</button>
+    </div>
+    <button id="btn-menu-close" class="btn-ghost-sm" style="width:100%;margin-top:8px">Fechar</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     MODAL: RECOMMENDATIONS
+═════════════════════════════════════ -->
+<div id="modal-recs" class="modal hidden">
+  <div class="modal-content recs-modal">
+    <div class="modal-header">
+      <h3>💡 Recomendações Inteligentes <span class="ai-chip">IA</span></h3>
+      <button class="modal-close" data-modal="modal-recs">✕</button>
+    </div>
+    <div id="recs-content" class="recs-content"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     MODAL: PREDICTION
+═════════════════════════════════════ -->
+<div id="modal-predict" class="modal hidden">
+  <div class="modal-content predict-modal">
+    <div class="modal-header">
+      <h3>🔮 Previsão de Impacto</h3>
+      <button class="modal-close" data-modal="modal-predict">✕</button>
+    </div>
+    <div id="predict-content" class="predict-content">
+      <canvas id="predict-chart" width="400" height="200"></canvas>
+      <div id="predict-text" class="predict-text"></div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
