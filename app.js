@@ -206,6 +206,45 @@ const MOOD_BUBBLES = {
   sad:     ['Ei, juntos podemos melhorar isso! 💪','Não desanime! O planeta precisa de você! 🌍','Pequenas mudanças fazem grande diferença! 🌿'],
 };
 
+/* ── MASCOT SPRITE SYSTEM ── */
+const mascotMap = {
+  animado:    "animado.png",
+  boa:        "boadecisão.png",
+  confuso:    "confuso.png",
+  ruim:       "decisaoruim.png",
+  descanso:   "descanso.png",
+  feliz:      "feliz.png",
+  missao:     "missaocomprida.png",
+  levelup:    "nivelup.png",
+  preocupado: "preocupado.png",
+  surpreso:   "surpreso.png",
+  triste:     "triste.png",
+};
+
+function setMascotState(state, duration = 2000) {
+  const mascot = document.getElementById("mascot-main");
+  if (!mascot) return;
+
+  const file = mascotMap[state] || mascotMap.animado;
+
+  mascot.src = `expressoesreciclinho/${file}`;
+
+  clearTimeout(window.mascotTimer);
+
+  window.mascotTimer = setTimeout(() => {
+    mascot.src = `expressoesreciclinho/animado.png`;
+  }, duration);
+}
+
+function triggerMascotEvent(event) {
+  if (event === "decisaoBoa")      setMascotState("boa");
+  if (event === "decisaoRuim")     setMascotState("ruim");
+  if (event === "missaoCompleta")  setMascotState("missao");
+  if (event === "levelUp")         setMascotState("levelup", 2500);
+}
+
+/* ── END MASCOT SPRITE SYSTEM ── */
+
 function updateCharacterMood(score) {
   const mood = score >= 65 ? 'happy' : score >= 40 ? 'neutral' : 'sad';
   const m = MOODS[mood];
@@ -369,6 +408,9 @@ function triggerLevelUp(level, ld) {
 
   // Confetti burst
   triggerConfetti();
+
+  // Mascot sprite reaction
+  triggerMascotEvent("levelUp");
 }
 
 /* ════════════════════════════════════
@@ -475,7 +517,11 @@ function pickAnswer(btn, qIndex, optIndex, q) {
     index: optIndex,
   };
 
-  // Mascot reaction
+  // Mascot sprite reaction based on answer weight
+  if (weight === 0) setMascotState("feliz");
+  else if (weight >= 2) setMascotState("triste");
+
+  // Mascot reaction (existing system — preserved)
   const moodType = weight === 0 ? 'good' : weight <= 1 ? 'neutral' : 'bad';
   triggerMascotReaction(moodType, q.mascot[optIndex]);
 
@@ -723,6 +769,13 @@ function handleDecision(choice) {
     gameState.stats.streak = 0;
   }
 
+  // Mascot sprite reaction
+  if (choice.type === 'good') {
+    triggerMascotEvent("decisaoBoa");
+  } else if (choice.type === 'bad') {
+    triggerMascotEvent("decisaoRuim");
+  }
+
   addXP(choice.xp);
   const newScore = Math.max(5, Math.min(100, gameState.stats.score + choice.score));
   updateScore(newScore);
@@ -811,6 +864,10 @@ function completeMission(mission) {
   });
 
   showToast(`Missão "${mission.title}" completa! +${mission.xp} XP`, 'good', '🏆');
+
+  // Mascot sprite reaction
+  triggerMascotEvent("missaoCompleta");
+
   updateStatsUI();
   renderMissionsList();
 

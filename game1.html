@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReCyclo — Separação de Lixo</title>
+
+  <!-- Fontes do projeto -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Exo+2:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="game1.css">
+</head>
+
+<body>
+
+  <!-- BACKGROUND (mantém identidade do seu projeto) -->
+  <div class="background-glow"></div>
+
+  <!-- CONTAINER PRINCIPAL -->
+  <main class="game-container">
+
+    <!-- HEADER -->
+    <header class="game-header">
+      <h1 class="game-title">♻ Separação de Lixo</h1>
+      <p class="game-subtitle">Classifique corretamente e salve o planeta</p>
+    </header>
+
+    <!-- HUD (INFORMAÇÕES) -->
+    <section class="game-hud">
+
+      <div class="hud-box">
+        <span class="hud-label">SCORE</span>
+        <span id="score" class="hud-value">0</span>
+      </div>
+
+      <div class="hud-box">
+        <span class="hud-label">TEMPO</span>
+        <span id="tempo" class="hud-value">30</span>
+      </div>
+
+      <div class="hud-box">
+        <span class="hud-label">STREAK</span>
+        <span id="streak" class="hud-value">0</span>
+      </div>
+
+    </section>
+
+    <!-- ÁREA DO ITEM -->
+    <section class="item-section">
+
+      <div id="item-box" class="item-box">
+        <span id="item-name">Clique em iniciar</span>
+      </div>
+
+      <!-- FEEDBACK -->
+      <div id="feedback" class="feedback"></div>
+
+    </section>
+
+    <!-- BOTÕES DE AÇÃO -->
+    <section class="bins">
+
+      <button class="bin reciclavel" onclick="escolher('reciclavel')">
+        ♻ Reciclável
+      </button>
+
+      <button class="bin organico" onclick="escolher('organico')">
+        🍃 Orgânico
+      </button>
+
+      <button class="bin eletronico" onclick="escolher('eletronico')">
+        ⚡ Eletrônico
+      </button>
+
+    </section>
+
+    <!-- CONTROLES -->
+    <section class="controls">
+
+      <button id="start-btn" class="btn-primary" onclick="startGame()">
+        ▶ Iniciar Jogo
+      </button>
+
+      <button id="restart-btn" class="btn-secondary" onclick="startGame()">
+        🔄 Reiniciar
+      </button>
+
+    </section>
+
+    <!-- RESULTADO FINAL -->
+    <section id="game-over" class="game-over hidden">
+      <h2>Fim de Jogo</h2>
+      <p>Seu score final:</p>
+      <span id="final-score">0</span>
+    </section>
+
+  </main>
+
+  <!-- JS -->
+  <script src="game1.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,200 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* BODY */
+body {
+  background: radial-gradient(circle at top, #081421, #050b16);
+  color: #d0eaff;
+  font-family: 'Exo 2', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* BACKGROUND GLOW */
+.background-glow {
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0,255,136,0.15), transparent 70%);
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  filter: blur(80px);
+  z-index: 0;
+}
+
+/* CONTAINER */
+.game-container {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: auto;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+/* HEADER */
+.game-header {
+  margin-bottom: 30px;
+}
+
+.game-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 32px;
+  color: #00ffae;
+  text-shadow: 0 0 10px #00ffae;
+}
+
+.game-subtitle {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-top: 8px;
+}
+
+/* HUD */
+.game-hud {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.hud-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(0,255,174,0.2);
+  padding: 12px 20px;
+  border-radius: 10px;
+  min-width: 90px;
+}
+
+.hud-label {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+.hud-value {
+  font-size: 18px;
+  color: #00ffae;
+  display: block;
+  margin-top: 4px;
+}
+
+/* ITEM BOX */
+.item-box {
+  margin: 30px auto;
+  padding: 25px;
+  width: 300px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,255,174,0.3);
+  background: rgba(0,255,174,0.03);
+  font-size: 20px;
+  transition: 0.2s ease;
+}
+
+/* FEEDBACK */
+.feedback {
+  height: 20px;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* BOTÕES */
+.bins {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 30px 0;
+}
+
+.bin {
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,255,174,0.3);
+  background: transparent;
+  color: #00ffae;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 14px;
+}
+
+.bin:hover {
+  background: #00ffae;
+  color: black;
+  transform: scale(1.05);
+}
+
+/* CORES ESPECÍFICAS */
+.reciclavel:hover { box-shadow: 0 0 10px #00ffae; }
+.organico:hover   { box-shadow: 0 0 10px #7CFF00; }
+.eletronico:hover { box-shadow: 0 0 10px #00e5ff; }
+
+/* BOTÕES DE CONTROLE */
+.controls {
+  margin-top: 20px;
+}
+
+.btn-primary {
+  padding: 12px 20px;
+  background: #00ffae;
+  border: none;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 5px;
+  border-radius: 8px;
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+}
+
+.btn-secondary {
+  padding: 12px 20px;
+  background: transparent;
+  border: 1px solid #00ffae;
+  color: #00ffae;
+  cursor: pointer;
+  margin: 5px;
+  border-radius: 8px;
+}
+
+.btn-secondary:hover {
+  background: #00ffae;
+  color: black;
+}
+
+/* ESTADOS */
+.correct {
+  background: rgba(0,255,136,0.2) !important;
+  border-color: #00ffae !important;
+  box-shadow: 0 0 15px #00ffae;
+}
+
+.wrong {
+  background: rgba(255,80,80,0.2) !important;
+  border-color: #ff4d4d !important;
+  box-shadow: 0 0 15px #ff4d4d;
+}
+
+/* GAME OVER */
+.game-over {
+  margin-top: 30px;
+}
+
+.game-over h2 {
+  color: #00ffae;
+}
+
+#final-score {
+  font-size: 28px;
+  display: block;
+  margin-top: 10px;
+}
+
+.hidden {
+  display: none;
+}

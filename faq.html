@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FAQ — ReCyclo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<canvas id="particle-bg"></canvas>
+
+<header class="landing-header">
+  <a href="index.html" class="lh-brand">
+    <span class="lh-logo-icon">♻</span>
+    <div class="lh-logo-words">
+      <span class="lh-logo-main">ReCyclo</span>
+      <span class="lh-logo-sub">Survival Edition</span>
+    </div>
+  </a>
+  <nav class="lh-nav-center">
+    <a href="game1.html" class="lh-link lh-link--game">
+      <span class="lh-link-icon">🎮</span><span>Game 1</span>
+      <span class="lh-link-badge">NOVO</span>
+    </a>
+    <a href="game2.html" class="lh-link lh-link--game">
+      <span class="lh-link-icon">⚡</span><span>Game 2</span>
+      <span class="lh-link-badge lh-link-badge--blue">BETA</span>
+    </a>
+  </nav>
+  <nav class="lh-nav-right">
+    <a href="sobre-nos.html" class="lh-link">Sobre Nós</a>
+    <a href="faq.html" class="lh-link active">FAQ</a>
+    <button id="lh-mobile-toggle" class="lh-mobile-btn" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
+<div class="lh-mobile-menu" id="lh-mobile-menu">
+  <a href="game1.html" class="lh-mobile-link">🎮 Game 1</a>
+  <a href="game2.html" class="lh-mobile-link">⚡ Game 2</a>
+  <a href="sobre-nos.html" class="lh-mobile-link">👥 Sobre Nós</a>
+  <a href="faq.html" class="lh-mobile-link">❓ FAQ</a>
+</div>
+
+<main class="page-wrap">
+  <div class="page-tag">DÚVIDAS FREQUENTES</div>
+  <h1 class="page-title"><em>FAQ</em></h1>
+  <p class="page-desc">Tire suas principais dúvidas sobre o ReCyclo e comece sua jornada sustentável.</p>
+
+  <div class="faq-list">
+    <details class="faq-item">
+      <summary class="faq-q">O jogo é gratuito?</summary>
+      <p class="faq-a">Sim! O ReCyclo é 100% gratuito. Basta acessar e começar a jogar — sem anúncios, sem pegadinhas.</p>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Meu progresso é salvo?</summary>
+      <p class="faq-a">Sim! O jogo salva automaticamente no seu navegador a cada 30 segundos via localStorage. Você pode continuar de onde parou a qualquer momento.</p>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">O que é o Score Ambiental?</summary>
+      <p class="faq-a">É uma pontuação de 0 a 100 que reflete seus hábitos sustentáveis. Quanto maior, melhor para o planeta! Ele é calculado com base em suas respostas e decisões.</p>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">As missões são personalizadas?</summary>
+      <p class="faq-a">Sim! A IA analisa suas respostas no diagnóstico inicial e gera missões focadas nos seus pontos de melhoria específicos.</p>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Posso jogar no celular?</summary>
+      <p class="faq-a">Sim! O ReCyclo é totalmente responsivo e funciona em qualquer dispositivo — desktop, tablet ou smartphone.</p>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Como funcionam os níveis?</summary>
+      <p class="faq-a">Você começa no Level 1 (Iniciante) e pode evoluir até o Level 10 (Campeão Supremo). Cada nível desbloqueia novos títulos e conquistas.</p>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Posso recomeçar o jogo?</summary>
+      <p class="faq-a">Sim! Acesse o menu (☰) dentro do jogo e clique em "Recomeçar Jogo". Atenção: todo o progresso será perdido.</p>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">O que é streak?</summary>
+      <p class="faq-a">Streak é sua sequência de boas decisões consecutivas. Quanto maior sua streak, mais conquistas você desbloqueia!</p>
+    </details>
+  </div>
+</main>
+
+<script>
+  const toggle = document.getElementById('lh-mobile-toggle');
+  const menu = document.getElementById('lh-mobile-menu');
+  if (toggle && menu) {
+    toggle.addEventListener('click', () => {
+      menu.classList.toggle('open');
+      toggle.classList.toggle('open');
+    });
+  }
+  (function(){
+    const c = document.getElementById('particle-bg'), x = c.getContext('2d');
+    let W, H, p;
+    function r(){ W=c.width=innerWidth; H=c.height=innerHeight; }
+    r(); addEventListener('resize', r);
+    p = Array.from({length:60},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.5+0.3,vx:(Math.random()-0.5)*0.3,vy:(Math.random()-0.5)*0.3,a:Math.random()*0.5+0.1}));
+    (function d(){ x.clearRect(0,0,W,H); p.forEach(o=>{x.beginPath();x.arc(o.x,o.y,o.r,0,Math.PI*2);x.fillStyle=`rgba(0,255,136,${o.a})`;x.fill();o.x+=o.vx;o.y+=o.vy;if(o.x<0)o.x=W;if(o.x>W)o.x=0;if(o.y<0)o.y=H;if(o.y>H)o.y=0;}); requestAnimationFrame(d); })();
+  })();
+</script>
+</body>
+</html>
