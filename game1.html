@@ -1,104 +1,148 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ReCyclo — Separação de Lixo</title>
-
-  <!-- Fontes do projeto -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Exo+2:wght@300;400;500&display=swap" rel="stylesheet">
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="game1.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>♻ Recatch – Jogo de Reciclagem</title>
+  <link rel="stylesheet" href="game1.css" />
 </head>
-
 <body>
 
-  <!-- BACKGROUND (mantém identidade do seu projeto) -->
-  <div class="background-glow"></div>
+  <!-- ░░░ MAIN HEADER (UNIFICADO) ░░░ -->
+  <header class="main-header">
+    <div class="main-header-left">
+      <a href="index.html" class="main-header-logo">
+        <span class="logo-icon">♻</span>
+        <span class="logo-text">ReCyclo</span>
+      </a>
+    </div>
+    <nav class="main-header-nav">
+      <a href="index.html" class="nav-btn">Home</a>
+      <a href="game1.html" class="nav-btn">ReCatch</a>
+      <a href="game2.html" class="nav-btn">Recyclo Crush</a>
+      <a href="sobre-nos.html" class="nav-btn alt">Sobre Nós</a>
+      <a href="faq.html" class="nav-btn alt">FAQ</a>
+    </nav>
+  </header>
 
-  <!-- CONTAINER PRINCIPAL -->
-  <main class="game-container">
+  <div id="gameContainer">
+    <canvas id="gameCanvas"></canvas>
 
-    <!-- HEADER -->
-    <header class="game-header">
-      <h1 class="game-title">♻ Separação de Lixo</h1>
-      <p class="game-subtitle">Classifique corretamente e salve o planeta</p>
-    </header>
-
-    <!-- HUD (INFORMAÇÕES) -->
-    <section class="game-hud">
-
-      <div class="hud-box">
+    <!-- HUD -->
+    <div id="hud">
+      <div class="hud-block">
         <span class="hud-label">SCORE</span>
-        <span id="score" class="hud-value">0</span>
+        <span class="hud-val" id="scoreEl">0</span>
       </div>
-
-      <div class="hud-box">
-        <span class="hud-label">TEMPO</span>
-        <span id="tempo" class="hud-value">30</span>
+      <div class="hud-block">
+        <span class="hud-label">COMBO</span>
+        <span class="hud-val combo" id="comboEl">x1</span>
       </div>
-
-      <div class="hud-box">
-        <span class="hud-label">STREAK</span>
-        <span id="streak" class="hud-value">0</span>
+      <div class="hud-block">
+        <span class="hud-label">LEVEL</span>
+        <span class="hud-val level" id="levelEl">1</span>
       </div>
-
-    </section>
-
-    <!-- ÁREA DO ITEM -->
-    <section class="item-section">
-
-      <div id="item-box" class="item-box">
-        <span id="item-name">Clique em iniciar</span>
+      <div class="hud-block">
+        <span class="hud-label">VIDAS</span>
+        <span class="hud-val lives" id="livesEl">❤❤❤</span>
       </div>
+      <div class="hud-block">
+        <span class="hud-label">PHASE</span>
+        <span class="hud-val phase" id="phaseEl">1</span>
+      </div>
+    </div>
 
-      <!-- FEEDBACK -->
-      <div id="feedback" class="feedback"></div>
+    <!-- Power-up bar -->
+    <div id="powerBar">
+      <div class="pw-icon" id="pw-slow">
+        <span class="pw-glyph">⧖</span>
+        <span class="pw-name">SLOW</span>
+        <div class="pw-timer" id="timer-slow"></div>
+      </div>
+      <div class="pw-icon" id="pw-mag">
+        <span class="pw-glyph">⦿</span>
+        <span class="pw-name">ÍMÃO</span>
+        <div class="pw-timer" id="timer-mag"></div>
+      </div>
+      <div class="pw-icon" id="pw-shield">
+        <span class="pw-glyph">◈</span>
+        <span class="pw-name">ESCUDO</span>
+        <div class="pw-timer" id="timer-shield"></div>
+      </div>
+    </div>
 
-    </section>
-
-    <!-- BOTÕES DE AÇÃO -->
-    <section class="bins">
-
-      <button class="bin reciclavel" onclick="escolher('reciclavel')">
-        ♻ Reciclável
+    <!-- Type selector bar -->
+    <div id="typeBar">
+      <button class="type-btn" data-type="1" id="btn1">
+        <span class="btn-key">1</span>
+        <span class="btn-icon">📰</span>
+        <span class="btn-label">PAPEL</span>
       </button>
-
-      <button class="bin organico" onclick="escolher('organico')">
-        🍃 Orgânico
+      <button class="type-btn" data-type="2" id="btn2">
+        <span class="btn-key">2</span>
+        <span class="btn-icon">🍶</span>
+        <span class="btn-label">PLÁSTICO</span>
       </button>
-
-      <button class="bin eletronico" onclick="escolher('eletronico')">
-        ⚡ Eletrônico
+      <button class="type-btn" data-type="3" id="btn3">
+        <span class="btn-key">3</span>
+        <span class="btn-icon">🍾</span>
+        <span class="btn-label">VIDRO</span>
       </button>
-
-    </section>
-
-    <!-- CONTROLES -->
-    <section class="controls">
-
-      <button id="start-btn" class="btn-primary" onclick="startGame()">
-        ▶ Iniciar Jogo
+      <button class="type-btn" data-type="4" id="btn4">
+        <span class="btn-key">4</span>
+        <span class="btn-icon">🥫</span>
+        <span class="btn-label">METAL</span>
       </button>
+    </div>
 
-      <button id="restart-btn" class="btn-secondary" onclick="startGame()">
-        🔄 Reiniciar
-      </button>
+    <!-- Messages -->
+    <div id="msgBanner"></div>
+    <div id="levelBanner"></div>
+    <div id="tipBox"></div>
 
-    </section>
+    <!-- Mobile controls -->
+    <div id="mobileControls">
+      <button id="btnLeft" class="mobile-btn">◀</button>
+      <button id="btnRight" class="mobile-btn">▶</button>
+    </div>
 
-    <!-- RESULTADO FINAL -->
-    <section id="game-over" class="game-over hidden">
-      <h2>Fim de Jogo</h2>
-      <p>Seu score final:</p>
-      <span id="final-score">0</span>
-    </section>
+    <!-- Overlay -->
+    <div id="overlay">
+      <div id="overlayContent">
+        <div class="overlay-logo">♻ RECATCH</div>
+        <div class="overlay-sub" id="overlaySubtitle">Educação Ambiental em Ação</div>
+        <div class="overlay-desc" id="overlayDesc">
+          Mova o Recyclinho com <strong>← →</strong> e troque o tipo com <strong>1 2 3 4</strong>.<br/>
+          Colete o lixo certo. Evite o perigoso!
+        </div>
+        <div class="type-legend">
+          <div class="legend-item papel">🔵 1 – Azul = Papel</div>
+          <div class="legend-item plastico">🔴 2 – Vermelho = Plástico</div>
+          <div class="legend-item vidro">🟢 3 – Verde = Vidro</div>
+          <div class="legend-item metal">🟡 4 – Amarelo = Metal</div>
+        </div>
+        <div class="overlay-score-display" id="overlayScoreDisplay" style="display:none"></div>
+        <button class="overlay-btn" id="overlayBtn">▶ INICIAR</button>
+        <div class="overlay-footer">
+          Arraste na tela para jogar no celular
+        </div>
+      </div>
+    </div>
 
-  </main>
+  </div>
 
-  <!-- JS -->
+  <audio id="bgMusic" src="music.mp3" loop></audio>
+
+  <script>
+    window.addEventListener("click", () => {
+      const music = document.getElementById("bgMusic");
+      if (music) {
+        music.volume = 0.3;
+        music.play().catch(() => {});
+      }
+    }, { once: true });
+  </script>
+
   <script src="game1.js"></script>
-
 </body>
 </html>

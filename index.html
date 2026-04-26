@@ -11,6 +11,23 @@
 </head>
 <body>
 
+<!-- ░░░ MAIN HEADER (UNIFICADO) ░░░ -->
+<header class="main-header">
+  <div class="main-header-left">
+    <a href="index.html" class="main-header-logo">
+      <span class="logo-icon">♻</span>
+      <span class="logo-text">ReCyclo</span>
+    </a>
+  </div>
+  <nav class="main-header-nav">
+    <a href="index.html" class="nav-btn">Home</a>
+    <a href="game1.html" class="nav-btn">ReCatch</a>
+    <a href="game2.html" class="nav-btn">Recyclo Crush</a>
+    <a href="sobre-nos.html" class="nav-btn alt">Sobre Nós</a>
+    <a href="faq.html" class="nav-btn alt">FAQ</a>
+  </nav>
+</header>
+
 <!-- ░░░ PARTICLE CANVAS ░░░ -->
 <canvas id="particle-bg"></canvas>
 
@@ -20,9 +37,7 @@
 <!-- ░░░ XP POPUP ░░░ -->
 <div id="xp-popup" class="xp-popup hidden"></div>
 
-<!-- ════════════════════════════════════
-     SCREEN: ONBOARDING
-═════════════════════════════════════ -->
+<!-- SCREEN: ONBOARDING -->
 <section id="screen-onboarding" class="screen active">
   <div class="onboard-bg-grid"></div>
   <div class="onboard-content">
@@ -66,13 +81,17 @@
     <button id="btn-continue" class="btn-secondary hidden">
       <span class="btn-icon">↩</span> Continuar Jogo
     </button>
+
+    <div class="onboard-game-links">
+      <a href="game1.html" class="btn-secondary"><span class="btn-icon">🎯</span> ReCatch Game</a>
+      <a href="game2.html" class="btn-secondary"><span class="btn-icon">💎</span> Recyclo Crush</a>
+    </div>
+
     <p class="version-tag">v2.0 · Save automático ativo</p>
   </div>
 </section>
 
-<!-- ════════════════════════════════════
-     SCREEN: CHARACTER CREATION
-═════════════════════════════════════ -->
+<!-- SCREEN: CHARACTER CREATION -->
 <section id="screen-char" class="screen">
   <div class="char-wrap">
     <div class="char-mascot-big">
@@ -107,9 +126,7 @@
   </div>
 </section>
 
-<!-- ════════════════════════════════════
-     SCREEN: QUIZ (DIAGNOSTIC)
-═════════════════════════════════════ -->
+<!-- SCREEN: QUIZ -->
 <section id="screen-quiz" class="screen">
   <div class="quiz-shell">
     <header class="quiz-hdr">
@@ -125,7 +142,6 @@
       <div id="quiz-progress-fill" class="quiz-prog-fill"></div>
     </div>
 
-    <!-- Mascote flutuante -->
     <div class="quiz-mascot-float">
       <div class="mascot-body mascot-sm" id="mascot-quiz">
         <div class="mascot-face">
@@ -152,9 +168,7 @@
   </div>
 </section>
 
-<!-- ════════════════════════════════════
-     SCREEN: ANALYSIS LOADING
-═════════════════════════════════════ -->
+<!-- SCREEN: ANALYSIS LOADING -->
 <section id="screen-loading" class="screen">
   <div class="load-inner">
     <div class="load-mascot">
@@ -175,12 +189,9 @@
   </div>
 </section>
 
-<!-- ════════════════════════════════════
-     SCREEN: MAIN GAME (DASHBOARD)
-═════════════════════════════════════ -->
+<!-- SCREEN: MAIN GAME -->
 <section id="screen-game" class="screen">
 
-  <!-- TOP HUD -->
   <div class="game-hud">
     <div class="hud-left">
       <div class="hud-logo">♻</div>
@@ -188,10 +199,6 @@
         <span id="hud-avatar">🌱</span>
         <span id="hud-name">Jogador</span>
       </div>
-      <nav class="hud-nav-left">
-  <a href="game1.html">Game 1</a>
-  <a href="game2.html">Game 2</a>
-</nav>
     </div>
     <div class="hud-center">
       <div class="hud-stat">
@@ -213,28 +220,19 @@
       <div class="hud-streak">
         🔥 <span id="hud-streak">0</span>
       </div>
-      <nav class="hud-nav-right">
-  <a href="sobre-nos.html">Sobre</a>
-  <a href="faq.html">FAQ</a>
-</nav>
-
       <button id="btn-menu" class="hud-btn">☰</button>
     </div>
   </div>
 
-  <!-- XP BAR FULL WIDTH -->
   <div class="xp-global-bar">
     <div id="xp-global-fill" class="xp-gfill" style="width:0%"></div>
     <span id="xp-global-label" class="xp-glabel">0 / 200 XP → Level 2</span>
   </div>
 
-  <!-- MAIN LAYOUT -->
   <div class="game-layout">
 
-    <!-- LEFT: CHARACTER + MISSION PANEL -->
     <aside class="game-aside">
 
-      <!-- Recyclinho -->
       <div class="char-panel" id="char-panel">
         <div class="char-panel-bg"></div>
         <div class="mascot-container">
@@ -256,7 +254,6 @@
         <div class="char-mood-label" id="mood-label">😊 Animado</div>
       </div>
 
-      <!-- ACTIVE MISSION -->
       <div class="mission-panel" id="mission-panel">
         <div class="panel-title">
           <span class="panel-icon">🎯</span> MISSÃO ATIVA
@@ -279,10 +276,8 @@
 
     </aside>
 
-    <!-- CENTER: QUICK DECISIONS + STATS -->
     <main class="game-main">
 
-      <!-- QUICK DECISION CARD -->
       <div class="decision-card" id="decision-card">
         <div class="dc-header">
           <span class="dc-icon">⚡</span>
@@ -294,7 +289,6 @@
         <div class="dc-choices" id="dc-choices"></div>
       </div>
 
-      <!-- ENVIRONMENTAL SCORE CARD -->
       <div class="env-card">
         <div class="env-card-title">Score Ambiental</div>
         <div class="env-score-display">
@@ -328,7 +322,6 @@
         </div>
       </div>
 
-      <!-- STATS ROW -->
       <div class="stats-row">
         <div class="stat-card">
           <div class="sc-icon">🎯</div>
@@ -354,17 +347,14 @@
 
     </main>
 
-    <!-- RIGHT: MISSIONS + HISTORY -->
     <aside class="game-right">
 
-      <!-- MISSION LIST -->
       <div class="panel missions-list-panel">
         <div class="panel-title"><span class="panel-icon">📋</span> MISSÕES DO DIA</div>
         <div id="missions-list" class="missions-list"></div>
         <button id="btn-refresh-missions" class="btn-refresh">↺ Novas missões</button>
       </div>
 
-      <!-- ACTION HISTORY -->
       <div class="panel history-panel">
         <div class="panel-title"><span class="panel-icon">📜</span> HISTÓRICO</div>
         <div id="action-history" class="action-history"></div>
@@ -372,9 +362,8 @@
 
     </aside>
 
-  </div><!-- /game-layout -->
+  </div>
 
-  <!-- ACHIEVEMENTS RIBBON -->
   <div class="achievements-ribbon" id="achievements-ribbon">
     <div class="ribbon-title"><span>🏅</span> CONQUISTAS</div>
     <div id="achievements-list" class="achv-list"></div>
@@ -382,9 +371,7 @@
 
 </section>
 
-<!-- ════════════════════════════════════
-     MODAL: LEVEL UP
-═════════════════════════════════════ -->
+<!-- MODALS -->
 <div id="modal-levelup" class="modal hidden">
   <div class="modal-content levelup-modal">
     <div class="lu-burst"></div>
@@ -406,9 +393,6 @@
   </div>
 </div>
 
-<!-- ════════════════════════════════════
-     MODAL: MENU
-═════════════════════════════════════ -->
 <div id="modal-menu" class="modal hidden">
   <div class="modal-content menu-modal">
     <h3 class="menu-title">♻ Menu</h3>
@@ -434,9 +418,6 @@
   </div>
 </div>
 
-<!-- ════════════════════════════════════
-     MODAL: RECOMMENDATIONS
-═════════════════════════════════════ -->
 <div id="modal-recs" class="modal hidden">
   <div class="modal-content recs-modal">
     <div class="modal-header">
@@ -447,9 +428,6 @@
   </div>
 </div>
 
-<!-- ════════════════════════════════════
-     MODAL: PREDICTION
-═════════════════════════════════════ -->
 <div id="modal-predict" class="modal hidden">
   <div class="modal-content predict-modal">
     <div class="modal-header">
@@ -463,10 +441,7 @@
   </div>
 </div>
 
-<!-- ════════════════════════════════════
-     FOOTER
-═════════════════════════════════════ -->
-
+<!-- FOOTER -->
 <footer class="main-footer">
   <div class="footer-content">
 
@@ -480,8 +455,9 @@
     </div>
 
     <div class="footer-links">
-      <a href="game1.html">Game 1</a>
-      <a href="game2.html">Game 2</a>
+      <a href="index.html">Home</a>
+      <a href="game1.html">ReCatch</a>
+      <a href="game2.html">Recyclo Crush</a>
       <a href="sobre-nos.html">Sobre</a>
       <a href="faq.html">FAQ</a>
     </div>

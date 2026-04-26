@@ -9,41 +9,53 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
+<div class="game-hud">
+  
+  <div class="hud-left">
+    <div class="hud-logo">♻</div>
+
+    <div class="hud-player">
+      <span id="hud-avatar">🌱</span>
+      <span id="hud-name">Leandro</span>
+    </div>
+
+    <nav class="hud-nav-left">
+      <a href="game1.html" class="nav-btn">ReCatch Game</a>
+      <a href="game2.html" class="nav-btn">Recyclo Crush</a>
+    </nav>
+  </div>
+
+  <div class="hud-center">
+    <div class="hud-stat">
+      <span class="hud-stat-label">SCORE</span>
+      <span class="hud-stat-val">0</span>
+    </div>
+
+    <div class="hud-stat">
+      <span class="hud-stat-label">LEVEL</span>
+      <span class="hud-stat-val">1</span>
+    </div>
+
+    <div class="hud-stat">
+      <span class="hud-stat-label">XP</span>
+      <span class="hud-stat-val">0</span>
+    </div>
+  </div>
+
+  <div class="hud-right">
+    <nav class="hud-nav-right">
+      <a href="sobre-nos.html" class="nav-btn alt">Sobre Nós</a>
+      <a href="faq.html" class="nav-btn alt">FAQ</a>
+    </nav>
+
+    <button class="hud-btn">☰</button>
+  </div>
+
+</div>
 <body>
 <canvas id="particle-bg"></canvas>
 
-<header class="landing-header">
-  <a href="index.html" class="lh-brand">
-    <span class="lh-logo-icon">♻</span>
-    <div class="lh-logo-words">
-      <span class="lh-logo-main">ReCyclo</span>
-      <span class="lh-logo-sub">Survival Edition</span>
-    </div>
-  </a>
-  <nav class="lh-nav-center">
-    <a href="game1.html" class="lh-link lh-link--game">
-      <span class="lh-link-icon">🎮</span><span>Game 1</span>
-      <span class="lh-link-badge">NOVO</span>
-    </a>
-    <a href="game2.html" class="lh-link lh-link--game">
-      <span class="lh-link-icon">⚡</span><span>Game 2</span>
-      <span class="lh-link-badge lh-link-badge--blue">BETA</span>
-    </a>
-  </nav>
-  <nav class="lh-nav-right">
-    <a href="sobre-nos.html" class="lh-link">Sobre Nós</a>
-    <a href="faq.html" class="lh-link active">FAQ</a>
-    <button id="lh-mobile-toggle" class="lh-mobile-btn" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  </nav>
-</header>
-<div class="lh-mobile-menu" id="lh-mobile-menu">
-  <a href="game1.html" class="lh-mobile-link">🎮 Game 1</a>
-  <a href="game2.html" class="lh-mobile-link">⚡ Game 2</a>
-  <a href="sobre-nos.html" class="lh-mobile-link">👥 Sobre Nós</a>
-  <a href="faq.html" class="lh-mobile-link">❓ FAQ</a>
-</div>
+
 
 <main class="page-wrap">
   <div class="page-tag">DÚVIDAS FREQUENTES</div>
