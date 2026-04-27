@@ -1,19 +1,17 @@
 /* ══════════════════════════════════════
-   RECYCLO 2.0 — script.js
-   Full game engine — modular, scalable
-   Prepared for future backend integration
+   RECYCLO 2.0 — app.js (VERSÃO MELHORADA)
+   Engine completo com expansões
 ══════════════════════════════════════ */
 
 'use strict';
 
 /* ════════════════════════════════════
-   DATABASE SCHEMA (localStorage-ready)
-   Future: replace storage calls with API
+   DATABASE SCHEMA
 ═════════════════════════════════════ */
 const DB_KEY = 'recyclo_v2';
 
 const DEFAULT_USER_PROFILE = {
-  id: null,          // future: UUID from backend
+  id: null,
   name: 'Jogador',
   avatar: '🌱',
   createdAt: null,
@@ -25,44 +23,42 @@ const DEFAULT_USER_STATS = {
   xp: 0,
   level: 1,
   streak: 0,
+  consecutiveBad: 0,   // NOVO: rastreia erros consecutivos
   missionsCompleted: 0,
   goodDecisions: 0,
+  badDecisions: 0,      // NOVO
   impactReduced: 0,
-  plastic: 0,      // raw diagnostic weight 0-9
-  emission: 0,     // raw diagnostic weight 0-6
-  waste: 0,        // raw weight 0-15
+  plastic: 0,
+  emission: 0,
+  waste: 0,
   totalWeight: 0,
 };
 
-const DEFAULT_USER_HISTORY = []; // array of action objects
-
 /* ════════════════════════════════════
-   GAME STATE (in-memory, synced to localStorage)
+   GAME STATE
 ═════════════════════════════════════ */
 const gameState = {
   profile: { ...DEFAULT_USER_PROFILE },
   stats: { ...DEFAULT_USER_STATS },
   history: [],
-  missions: [],       // active daily missions
+  missions: [],
   activeMission: null,
   achievements: [],
   diagnosticAnswers: [],
   selectedAvatar: '🌱',
   initialized: false,
-
-  /* future backend hook */
   _dirty: false,
   markDirty() { this._dirty = true; },
 };
 
 /* ════════════════════════════════════
-   SAVE / LOAD  (localStorage → future API)
+   SAVE / LOAD
 ═════════════════════════════════════ */
 function saveGame() {
   const payload = {
     profile: gameState.profile,
     stats: gameState.stats,
-    history: gameState.history.slice(-50), // keep last 50
+    history: gameState.history.slice(-50),
     missions: gameState.missions,
     activeMission: gameState.activeMission,
     achievements: gameState.achievements,
@@ -156,6 +152,7 @@ function showXPPopup(xp) {
 ═════════════════════════════════════ */
 function initParticles() {
   const canvas = $('particle-bg');
+  if (!canvas) return;
   const ctx = canvas.getContext('2d');
   let W, H, particles;
 
@@ -192,84 +189,306 @@ function initParticles() {
 }
 
 /* ════════════════════════════════════
-   MASCOT SYSTEM
+   MASCOT SYSTEM v3 — EXPANDIDO
 ═════════════════════════════════════ */
-const MOODS = {
-  happy:   { mouth: 'happy',   aura: 'aura-happy',   label: '😊 Animado',     arms: ['🌿','🌿'],    bubble: null },
-  neutral: { mouth: 'neutral', aura: 'aura-neutral',  label: '😐 Observando',  arms: ['👀','💭'],    bubble: null },
-  sad:     { mouth: 'sad',     aura: 'aura-sad',      label: '😟 Preocupado',  arms: ['😔','🌍'],    bubble: null },
+const mascotState = {
+  mood: 'neutro',
+  energia: 100,
+  confianca: 50,
+  ultimoEvento: null,
+  streakAtual: 0,
 };
 
-const MOOD_BUBBLES = {
-  happy:   ['Continue assim! O planeta agradece! 🌱','Incrível! Você é uma inspiração! ⚡','Woohoo! Missão cumprida! 🎉'],
-  neutral: ['Hmm... Posso te ajudar a melhorar! 🤔','Cada passo conta, vamos em frente! 👣','Você tem potencial! Confio em você! 💫'],
-  sad:     ['Ei, juntos podemos melhorar isso! 💪','Não desanime! O planeta precisa de você! 🌍','Pequenas mudanças fazem grande diferença! 🌿'],
+/* 🎭 SPRITES */
+const mascotSprites = {
+  feliz:      'feliz.png',
+  neutro:     'animado.png',
+  preocupado: 'preocupado.png',
+  triste:     'triste.png',
+  boa:        'boadecisao.png',
+  ruim:       'decisaoruim.png',
+  missao:     'missaocomprida.png',
+  levelup:    'nivelup.png',
+  confuso:    'confuso.png',
+  surpreso:   'surpreso.png',
+  descanso:   'descanso.png',
+  animado:    'animado.png',
 };
+
+/* 🧠 CÉREBRO DO MASCOTE */
+function updateMascotBrain(event) {
+  mascotState.ultimoEvento = event;
+
+  switch (event) {
+    case 'decisaoBoa':
+      mascotState.confianca += 6;
+      mascotState.energia += 3;
+      mascotState.streakAtual++;
+      break;
+    case 'decisaoRuim':
+      mascotState.confianca -= 8;
+      mascotState.energia -= 5;
+      mascotState.streakAtual = 0;
+      break;
+    case 'missaoCompleta':
+      mascotState.confianca += 10;
+      mascotState.energia += 6;
+      break;
+    case 'levelUp':
+      mascotState.confianca += 15;
+      mascotState.energia += 10;
+      break;
+    case 'streakAlta':
+      mascotState.confianca += 5;
+      mascotState.energia += 5;
+      break;
+    case 'erroConsecutivo':
+      mascotState.confianca -= 5;
+      mascotState.energia -= 3;
+      break;
+  }
+
+  mascotState.confianca = Math.max(0, Math.min(100, mascotState.confianca));
+  mascotState.energia   = Math.max(0, Math.min(100, mascotState.energia));
+  updateMascotMood();
+}
+
+/* 🎭 HUMOR */
+function updateMascotMood() {
+  const c = mascotState.confianca;
+  if (c > 75) mascotState.mood = 'feliz';
+  else if (c < 25) mascotState.mood = 'preocupado';
+  else mascotState.mood = 'neutro';
+  renderMascot();
+}
+
+/* 🎨 RENDER MASCOT (img antiga) */
+function renderMascot(tempState = null, duration = 2000) {
+  const img = document.getElementById('mascot-img');
+  if (!img) return;
+  const state = tempState || mascotState.mood;
+  const file  = mascotSprites[state] || mascotSprites.neutro;
+  img.src = `expressoesreciclinho/${file}`;
+  if (tempState) {
+    clearTimeout(window.mascotTimer);
+    window.mascotTimer = setTimeout(() => {
+      img.src = `expressoesreciclinho/${mascotSprites[mascotState.mood]}`;
+    }, duration);
+  }
+}
 
 /* ── MASCOT SPRITE SYSTEM ── */
 const mascotMap = {
-  animado:    "animado.png",
-  boa:        "boadecisão.png",
-  confuso:    "confuso.png",
-  ruim:       "decisaoruim.png",
-  descanso:   "descanso.png",
-  feliz:      "feliz.png",
-  missao:     "missaocomprida.png",
-  levelup:    "nivelup.png",
-  preocupado: "preocupado.png",
-  surpreso:   "surpreso.png",
-  triste:     "triste.png",
+  animado:    'animado.png',
+  boa:        'boadecisão.png',
+  confuso:    'confuso.png',
+  ruim:       'decisaoruim.png',
+  descanso:   'descanso.png',
+  feliz:      'feliz.png',
+  missao:     'missaocomprida.png',
+  levelup:    'nivelup.png',
+  preocupado: 'preocupado.png',
+  surpreso:   'surpreso.png',
+  triste:     'triste.png',
+  orgulhoso:  'feliz.png',       // fallback até ter sprite próprio
+  alerta:     'preocupado.png',  // fallback
+  cansado:    'descanso.png',    // fallback
 };
 
-function setMascotState(state, duration = 2000) {
-  const mascot = document.getElementById("mascot-main");
+/* ── ANIMAÇÕES DO MASCOTE ── */
+function animateMascot(type) {
+  const mascot = document.getElementById('mascot-main');
   if (!mascot) return;
+  // Remove classe anterior
+  mascot.classList.remove('mascot-bounce', 'mascot-shake', 'mascot-glow', 'mascot-pulse', 'mascot-spin');
+  // Força reflow para reiniciar animação
+  void mascot.offsetWidth;
+  switch (type) {
+    case 'bounce':  mascot.classList.add('mascot-bounce'); break;
+    case 'shake':   mascot.classList.add('mascot-shake');  break;
+    case 'glow':    mascot.classList.add('mascot-glow');   break;
+    case 'pulse':   mascot.classList.add('mascot-pulse');  break;
+    case 'spin':    mascot.classList.add('mascot-spin');   break;
+  }
+  setTimeout(() => {
+    mascot.classList.remove('mascot-bounce', 'mascot-shake', 'mascot-glow', 'mascot-pulse', 'mascot-spin');
+  }, 1200);
+}
 
+function setMascotState(state, duration = 2000) {
+  const mascot = document.getElementById('mascot-main');
+  if (!mascot) return;
   const file = mascotMap[state] || mascotMap.animado;
-
-  mascot.src = `expressoesreciclinho/${file}`;
-
+  const img = mascot.querySelector ? mascot.querySelector('img') : mascot;
+  const target = img || mascot;
+  if (target.tagName === 'IMG') target.src = `expressoesreciclinho/${file}`;
   clearTimeout(window.mascotTimer);
-
   window.mascotTimer = setTimeout(() => {
-    mascot.src = `expressoesreciclinho/animado.png`;
+    if (target.tagName === 'IMG') target.src = `expressoesreciclinho/animado.png`;
   }, duration);
 }
 
 function triggerMascotEvent(event) {
-  if (event === "decisaoBoa")      setMascotState("boa");
-  if (event === "decisaoRuim")     setMascotState("ruim");
-  if (event === "missaoCompleta")  setMascotState("missao");
-  if (event === "levelUp")         setMascotState("levelup", 2500);
+  updateMascotBrain(event);
+
+  // Atualiza fala do mascote
+  const bubble = $('main-bubble');
+  if (bubble) {
+    bubble.textContent = getMascotDialogue();
+  }
+
+  if (event === 'decisaoBoa') {
+    setMascotState('boa');
+    animateMascot('bounce');
+  }
+  if (event === 'decisaoRuim') {
+    setMascotState('ruim');
+    animateMascot('shake');
+  }
+  if (event === 'missaoCompleta') {
+    setMascotState('missao');
+    animateMascot('bounce');
+  }
+  if (event === 'levelUp') {
+    setMascotState('levelup', 3000);
+    animateMascot('glow');
+  }
+  if (event === 'streakAlta') {
+    setMascotState('orgulhoso', 2500);
+    animateMascot('pulse');
+  }
+  if (event === 'erroConsecutivo') {
+    setMascotState('alerta', 2500);
+    animateMascot('shake');
+  }
 }
 
-/* ── END MASCOT SPRITE SYSTEM ── */
+/* 💬 SISTEMA DE DIÁLOGOS EXPANDIDO */
+function getMascotDialogue() {
+  const { mood, ultimoEvento, confianca, energia, streakAtual } = mascotState;
+
+  // Falas de alta performance (streak alta)
+  const highPerformance = [
+    `🔥 ${streakAtual} decisões corretas. Você está dominando.`,
+    'Padrão de elite detectado. Continue assim.',
+    'Sua consistência é impressionante. Impacto real.',
+    'Você já não precisa de mim para isso. Mas sigo observando.',
+    'Sequência perfeita. Isso é consciência ambiental de verdade.',
+  ];
+
+  // Falas de alerta (erros consecutivos)
+  const alertas = [
+    '⚠️ Dois erros seguidos. Precisa reagir agora.',
+    'Esse padrão está prejudicando seu score. Foco.',
+    'Cada decisão ruim tem custo real. Reveja seu caminho.',
+    'O planeta sente cada escolha. Inclusive as ruins.',
+    '⚠️ Você pode fazer muito mais do que está fazendo.',
+  ];
+
+  const dialogues = {
+    decisaoBoa: [
+      '✅ Essa escolha reduziu impacto real.',
+      'Decisão inteligente. Continua nesse nível.',
+      'Você tá entendendo como isso funciona. 🌱',
+      'Ação concreta. Resultado concreto.',
+      '🔥 Isso é o que separa quem age de quem só fala.',
+      'Cada escolha certa acumula. Você está construindo algo.',
+      'Perfeito. Exatamente isso.',
+      'Menos resíduo. Menos emissão. Mais futuro.',
+      'Sua pegada diminuiu agora. É real.',
+      '✅ Decisão calculada. Impacto positivo registrado.',
+    ],
+    decisaoRuim: [
+      '❌ Essa escolha tem custo ambiental.',
+      'Não foi a melhor opção. Você sabe disso.',
+      'Isso adiciona carga no sistema. Pense na próxima.',
+      'O planeta registra cada decisão. Inclusive essa.',
+      'Erro detectado. Corrija no próximo ciclo.',
+      'Você pode fazer melhor. Esse padrão precisa mudar.',
+      '⚠️ Essa opção tem consequências além do que você vê.',
+      'Tudo bem errar. Mas reconhecer o erro é o primeiro passo.',
+      'Decisão impulsiva. Tente desacelerar.',
+      '❌ Impacto negativo registrado. Recupere no próximo.',
+    ],
+    neutro: [
+      'Qual vai ser sua próxima jogada?',
+      'Estou analisando seu comportamento.',
+      'Cada escolha importa. Inclusive a próxima.',
+      'O sistema está observando seus padrões.',
+      'Você tem potencial. Use.',
+      'Não é sobre perfeição. É sobre consistência.',
+      'O que você faz quando ninguém está olhando?',
+      'Pequenas ações. Grande impacto. Continue.',
+      'Estou calculando sua trajetória...',
+      'Você está construindo um hábito. Qual vai ser?',
+    ],
+    missaoCompleta: [
+      '🎯 Missão concluída. Progresso real.',
+      'Você gerou impacto positivo agora. Registrado.',
+      'Mais um passo certo no caminho.',
+      'Comprometimento detectado. Nível subindo.',
+      '✅ Missão cumprida. Próximo objetivo?',
+    ],
+    levelUp: [
+      '🚀 EVOLUÇÃO DETECTADA. Você subiu de nível.',
+      'Nível novo. Responsabilidade maior.',
+      'Seu impacto aumentou oficialmente.',
+      'Agora você está em outro patamar.',
+      '🏆 Level up real. Não só no jogo.',
+    ],
+  };
+
+  // Prioridades especiais
+  if (streakAtual >= 5) return highPerformance[Math.floor(Math.random() * highPerformance.length)];
+  if (gameState.stats.consecutiveBad >= 2) return alertas[Math.floor(Math.random() * alertas.length)];
+
+  let pool = dialogues[ultimoEvento] || dialogues.neutro;
+
+  if (energia < 30) pool = alertas;
+  if (confianca > 85) pool = highPerformance;
+  if (mood === 'preocupado') pool = alertas;
+
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+/* ── MOOD SYSTEM (compatibility) ── */
+const MOODS = {
+  happy:   { mouth: 'happy',   aura: 'aura-happy',   label: '🌟 Excelente!',   arms: ['🌿', '🌿'] },
+  neutral: { mouth: 'neutral', aura: 'aura-neutral',  label: '🤖 Observando',   arms: ['🌱', '🌱'] },
+  sad:     { mouth: 'sad',     aura: 'aura-sad',      label: '⚠️ Atenção',      arms: ['😔', '😔'] },
+};
+
+const MOOD_BUBBLES = {
+  happy:   ['Você está no caminho certo! 🌍', 'Impacto positivo detectado!', 'Excelente padrão de decisões! 🔥'],
+  neutral: ['Cada escolha conta.', 'Estou calculando seu impacto...', 'Qual será sua próxima decisão?'],
+  sad:     ['Você pode melhorar isso.', 'Reveja seus hábitos.', 'O planeta precisa mais de você.'],
+};
 
 function updateCharacterMood(score) {
   const mood = score >= 65 ? 'happy' : score >= 40 ? 'neutral' : 'sad';
   const m = MOODS[mood];
 
-  const mouth = $('main-mouth');
-  const aura = $('mascot-aura');
-  const label = $('mood-label');
-  const armL = $('main-arm-l');
-  const armR = $('main-arm-r');
+  const mouth  = $('main-mouth');
+  const aura   = $('mascot-aura');
+  const label  = $('mood-label');
+  const armL   = $('main-arm-l');
+  const armR   = $('main-arm-r');
 
-  if (mouth) { mouth.className = `mascot-mouth ${m.mouth}`; }
-  if (aura)  { aura.className = `mascot-aura ${m.aura}`; }
-  if (label) { label.textContent = m.label; }
-  if (armL)  { armL.textContent = m.arms[0]; }
-  if (armR)  { armR.textContent = m.arms[1]; }
+  if (mouth) mouth.className = `mascot-mouth ${m.mouth}`;
+  if (aura)  aura.className  = `mascot-aura ${m.aura}`;
+  if (label) label.textContent = m.label;
+  if (armL)  armL.textContent = m.arms[0];
+  if (armR)  armR.textContent = m.arms[1];
 
   const bubbles = MOOD_BUBBLES[mood];
-  const bubble = $('main-bubble');
+  const bubble  = $('main-bubble');
   if (bubble) {
     bubble.textContent = bubbles[Math.floor(Math.random() * bubbles.length)];
   }
 }
 
 function triggerMascotReaction(type, bubble) {
-  const quizMouth = $('quiz-mouth');
+  const quizMouth  = $('quiz-mouth');
   const quizBubble = $('quiz-bubble');
   if (quizMouth && type === 'good') {
     quizMouth.className = 'mascot-mouth happy';
@@ -299,12 +518,10 @@ function updateScore(newScore, animate = true) {
   gameState.stats.score = Math.max(0, Math.min(100, newScore));
   const cls = getClassification(gameState.stats.score);
 
-  // HUD
   const hudScore = $('hud-score');
   if (animate) animNum(hudScore, gameState.stats.score);
   else if (hudScore) hudScore.textContent = gameState.stats.score;
 
-  // Env card
   const envNum = $('env-score-num');
   if (animate) animNum(envNum, gameState.stats.score);
   else if (envNum) envNum.textContent = gameState.stats.score;
@@ -312,11 +529,10 @@ function updateScore(newScore, animate = true) {
   const envClass = $('env-class');
   if (envClass) { envClass.textContent = cls.label; envClass.style.color = cls.color; }
 
-  // Hex fill intensity
   const hexFill = $('hex-fill');
   if (hexFill) {
     const op = 0.05 + (gameState.stats.score / 100) * 0.3;
-    hexFill.style.fill = `rgba(0,255,136,${op})`;
+    hexFill.style.fill   = `rgba(0,255,136,${op})`;
     hexFill.style.stroke = cls.color;
     hexFill.style.filter = `drop-shadow(0 0 ${Math.round(gameState.stats.score / 10)}px ${cls.color})`;
   }
@@ -341,34 +557,29 @@ const LEVEL_DATA = [
   { level: 10, title: 'Campeão Supremo',   xpRequired: 5400, unlock: '👑 TÍTULO MÁXIMO: Campeão Supremo' },
 ];
 
-function getLevelData(level) { return LEVEL_DATA[Math.min(level - 1, 9)]; }
+function getLevelData(level)     { return LEVEL_DATA[Math.min(level - 1, 9)]; }
 function getNextLevelData(level) { return LEVEL_DATA[Math.min(level, 9)]; }
 
 function updateLevel() {
   const { xp, level } = gameState.stats;
-
-  // Find correct level
   let newLevel = 1;
   for (let i = LEVEL_DATA.length - 1; i >= 0; i--) {
     if (xp >= LEVEL_DATA[i].xpRequired) { newLevel = LEVEL_DATA[i].level; break; }
   }
-
   const leveledUp = newLevel > gameState.stats.level;
   gameState.stats.level = newLevel;
 
-  const ld = getLevelData(newLevel);
+  const ld   = getLevelData(newLevel);
   const next = getNextLevelData(newLevel);
   const xpInLevel = xp - ld.xpRequired;
-  const xpNeeded = next.xpRequired - ld.xpRequired;
+  const xpNeeded  = next.xpRequired - ld.xpRequired;
   const pct = newLevel >= 10 ? 100 : Math.round((xpInLevel / xpNeeded) * 100);
 
-  // HUD
   const hudLevel = $('hud-level');
   if (hudLevel) hudLevel.textContent = newLevel;
   const hudXP = $('hud-xp');
   if (hudXP) hudXP.textContent = xp;
 
-  // Global XP bar
   const gf = $('xp-global-fill');
   const gl = $('xp-global-label');
   if (gf) gf.style.width = pct + '%';
@@ -376,15 +587,12 @@ function updateLevel() {
     ? `Level MAX — ${xp} XP`
     : `${xp} / ${next.xpRequired} XP → Level ${newLevel + 1}`;
 
-  // Menu modal stats
-  const ms = $('ms-level');
+  const ms  = $('ms-level');
   if (ms) ms.textContent = newLevel;
   const msxp = $('ms-xp');
   if (msxp) msxp.textContent = xp;
-  const mpt = $('menu-player-title');
+  const mpt  = $('menu-player-title');
   if (mpt) mpt.textContent = ld.title;
-  const lbadge = $('hud-level');
-  if (lbadge) lbadge.textContent = newLevel;
 
   if (leveledUp) triggerLevelUp(newLevel, ld);
   gameState.markDirty();
@@ -399,18 +607,13 @@ function addXP(amount) {
 
 function triggerLevelUp(level, ld) {
   const modal = $('modal-levelup');
-  $('lu-level').textContent = level;
-  $('lu-title').textContent = ld.title;
+  $('lu-level').textContent  = level;
+  $('lu-title').textContent  = ld.title;
   $('lu-unlock').textContent = ld.unlock || '';
   modal.classList.remove('hidden');
-
   showToast(`LEVEL UP! Você é agora: ${ld.title}!`, 'good', '🏆');
-
-  // Confetti burst
   triggerConfetti();
-
-  // Mascot sprite reaction
-  triggerMascotEvent("levelUp");
+  triggerMascotEvent('levelUp');
 }
 
 /* ════════════════════════════════════
@@ -475,9 +678,9 @@ function renderQuestion(index) {
 
   $('quiz-progress-fill').style.width = fill + '%';
   $('q-current').textContent = index + 1;
-  $('q-tag').textContent = q.category;
-  $('q-xp').textContent = `+${q.xpReward} XP`;
-  $('q-text').textContent = q.text;
+  $('q-tag').textContent     = q.category;
+  $('q-xp').textContent      = `+${q.xpReward} XP`;
+  $('q-text').textContent    = q.text;
   $('lore-text').textContent = q.lore;
 
   const card = $('question-card');
@@ -488,13 +691,12 @@ function renderQuestion(index) {
   opts.innerHTML = '';
   q.options.forEach((opt, i) => {
     const btn = document.createElement('button');
-    btn.className = 'q-option';
+    btn.className  = 'q-option';
     btn.textContent = opt;
     btn.addEventListener('click', () => pickAnswer(btn, index, i, q));
     opts.appendChild(btn);
   });
 
-  // Sync label
   const syncLabels = [
     'Analisando hábitos alimentares...',
     'Mapeando uso de plástico...',
@@ -517,11 +719,9 @@ function pickAnswer(btn, qIndex, optIndex, q) {
     index: optIndex,
   };
 
-  // Mascot sprite reaction based on answer weight
-  if (weight === 0) setMascotState("feliz");
-  else if (weight >= 2) setMascotState("triste");
+  if (weight === 0) setMascotState('feliz');
+  else if (weight >= 2) setMascotState('triste');
 
-  // Mascot reaction (existing system — preserved)
   const moodType = weight === 0 ? 'good' : weight <= 1 ? 'neutral' : 'bad';
   triggerMascotReaction(moodType, q.mascot[optIndex]);
 
@@ -552,70 +752,65 @@ const ANALYSIS_STEPS = [
 async function startAnalysis() {
   showScreen('screen-loading');
   const stepsEl = $('load-steps');
-  const bar = $('load-bar');
-  const title = $('load-title');
-  const sub = $('load-sub');
+  const bar     = $('load-bar');
+  const title   = $('load-title');
+  const sub     = $('load-sub');
 
   for (let i = 0; i < ANALYSIS_STEPS.length; i++) {
     const pct = Math.round(((i + 1) / ANALYSIS_STEPS.length) * 100);
-
     title.style.opacity = 0;
     await sleep(200);
-    title.textContent = ANALYSIS_STEPS[i];
+    title.textContent   = ANALYSIS_STEPS[i];
     title.style.opacity = 1;
-    bar.style.width = pct + '%';
+    bar.style.width     = pct + '%';
 
     const step = document.createElement('div');
     step.className = 'load-step';
     step.innerHTML = `<span class="load-step-dot"></span>${ANALYSIS_STEPS[i]}`;
     stepsEl.appendChild(step);
     setTimeout(() => step.classList.add('done'), 300);
-
     await sleep(500);
   }
 
   sub.textContent = 'Perfil pronto! Iniciando jogo...';
   await sleep(600);
-
   buildGameState();
   showScreen('screen-game');
   initGameUI();
 }
 
 /* ════════════════════════════════════
-   BUILD GAME STATE FROM DIAGNOSTIC
+   BUILD GAME STATE
 ═════════════════════════════════════ */
 function buildGameState() {
-  const ans = gameState.diagnosticAnswers;
-  const score = computeScore(ans);
-  const xpStart = score * 2; // starting XP from diagnostic
+  const ans    = gameState.diagnosticAnswers;
+  const score  = computeScore(ans);
+  const xpStart = score * 2;
 
-  // Indicators
   const plastic  = ans[0].weight + ans[1].weight + ans[4].weight;
   const emission = ans[2].weight + ans[3].weight;
   const waste    = ans.reduce((s, a) => s + a.weight, 0);
 
-  gameState.stats.score = score;
-  gameState.stats.xp = xpStart;
+  gameState.stats.score    = score;
+  gameState.stats.xp       = xpStart;
   gameState.stats.plastic  = plastic;
   gameState.stats.emission = emission;
   gameState.stats.waste    = waste;
   gameState.stats.totalWeight = waste;
 
-  // Generate initial missions based on patterns
-  gameState.missions = generateMissions();
+  gameState.missions      = generateMissions();
   gameState.activeMission = gameState.missions[0];
-  gameState.achievements = buildAchievements();
+  gameState.achievements  = buildAchievements();
 
   gameState.profile.lastActive = Date.now();
-  gameState.profile.createdAt = gameState.profile.createdAt || Date.now();
+  gameState.profile.createdAt  = gameState.profile.createdAt || Date.now();
 
   updateLevel();
   saveGame();
 }
 
 /* ════════════════════════════════════
-   MISSION GENERATOR (AI-simulated)
+   MISSION GENERATOR
 ═════════════════════════════════════ */
 const MISSION_POOL = {
   plastic: [
@@ -646,23 +841,18 @@ function generateMissions() {
   const ans = gameState.diagnosticAnswers;
   const pool = [];
 
-  // IA-simulated personalization: weight heavy-use categories
-  const plasticWeight  = (ans[1]?.weight || 0) + (ans[4]?.weight || 0);
-  const deliveryWeight = ans[0]?.weight || 0;
+  const plasticWeight   = (ans[1]?.weight || 0) + (ans[4]?.weight || 0);
+  const deliveryWeight  = ans[0]?.weight || 0;
   const transportWeight = ans[3]?.weight || 0;
 
   if (plasticWeight >= 3)   pool.push(...MISSION_POOL.plastic.slice(0, 3));
   else                       pool.push(...MISSION_POOL.plastic.slice(0, 1));
-
   if (deliveryWeight >= 2)  pool.push(...MISSION_POOL.delivery.slice(0, 2));
   else                       pool.push(...MISSION_POOL.delivery.slice(0, 1));
-
   if (transportWeight >= 2) pool.push(...MISSION_POOL.transport.slice(0, 2));
   else                       pool.push(...MISSION_POOL.transport.slice(0, 1));
-
   pool.push(...MISSION_POOL.general);
 
-  // Shuffle and pick 5
   return shuffleArray(pool).slice(0, 5).map((m, i) => ({
     ...m,
     id: `mission_${Date.now()}_${i}`,
@@ -675,41 +865,42 @@ function shuffleArray(arr) {
 }
 
 /* ════════════════════════════════════
-   QUICK DECISIONS (micro-interactions)
+   DECISIONS — BASE + EXPANDIDAS (17 total)
 ═════════════════════════════════════ */
 const DECISIONS = [
+  // ── ORIGINAIS ──
   {
     question: 'Você está com fome. Vai pedir delivery agora?',
     context: 'Você tem ingredientes em casa para um prato simples.',
     choices: [
       { text: '🍳 Cozinhar em casa', type: 'good',    xp: 30, score: +3, msg: 'Excelente! Menos embalagens no mundo!' },
       { text: '📱 Pedir delivery',   type: 'bad',     xp: 5,  score: -2, msg: 'Tudo bem! Tente reduzir nas próximas.' },
-      { text: '🤔 Decidir depois',   type: 'neutral', xp: 10, score:  0, msg: 'Tudo bem! Que tal cozinhar hoje?' },
+      { text: '🤔 Decidir depois',   type: 'neutral', xp: 10, score:  0, msg: 'Que tal cozinhar hoje?' },
     ],
   },
   {
     question: 'No mercado, a opção mais barata vem em sacola plástica.',
     context: 'Você tem uma ecobag na mochila.',
     choices: [
-      { text: '♻️ Usar minha ecobag',    type: 'good', xp: 25, score: +3, msg: 'Zero plástico! Planeta agradece! 🌍' },
-      { text: '🛍 Pegar a sacola plástica', type: 'bad', xp: 5, score: -2, msg: 'Tente lembrar da ecobag da próxima vez!' },
+      { text: '♻️ Usar minha ecobag',       type: 'good', xp: 25, score: +3, msg: 'Zero plástico! Planeta agradece! 🌍' },
+      { text: '🛍 Pegar a sacola plástica',  type: 'bad',  xp: 5,  score: -2, msg: 'Lembre da ecobag da próxima vez!' },
     ],
   },
   {
     question: 'Viagem curta: você vai de carro ou a pé?',
     context: 'A distância é de apenas 800 metros.',
     choices: [
-      { text: '🚶 Vou a pé!',      type: 'good', xp: 35, score: +4, msg: 'Saúde + zero emissões = perfeito! 💪' },
-      { text: '🚗 Vou de carro',   type: 'bad',  xp: 5,  score: -2, msg: 'Caminhar salva o planeta e a saúde!' },
-      { text: '🚲 Vou de bike',    type: 'good', xp: 40, score: +5, msg: 'Incrível! Bike é o futuro! 🚴‍♀️' },
+      { text: '🚶 Vou a pé!',    type: 'good', xp: 35, score: +4, msg: 'Saúde + zero emissões = perfeito! 💪' },
+      { text: '🚗 Vou de carro', type: 'bad',  xp: 5,  score: -2, msg: 'Caminhar salva o planeta e a saúde!' },
+      { text: '🚲 Vou de bike',  type: 'good', xp: 40, score: +5, msg: 'Incrível! Bike é o futuro! 🚴‍♀️' },
     ],
   },
   {
     question: 'Sua bebida vem em copo plástico. O que você faz?',
     context: 'Você tem sua garrafa térmica na bolsa.',
     choices: [
-      { text: '💧 Uso minha térmica',   type: 'good', xp: 30, score: +3, msg: 'Térmica rocks! Menos plástico no mundo! ♻️' },
-      { text: '🥤 Aceito o plástico',   type: 'bad',  xp: 5,  score: -2, msg: 'Tudo bem! Sua térmica agradece amanhã!' },
+      { text: '💧 Uso minha térmica', type: 'good', xp: 30, score: +3, msg: 'Térmica rocks! Menos plástico no mundo! ♻️' },
+      { text: '🥤 Aceito o plástico', type: 'bad',  xp: 5,  score: -2, msg: 'Sua térmica agradece amanhã!' },
     ],
   },
   {
@@ -717,7 +908,7 @@ const DECISIONS = [
     context: 'Várias lojas oferecem frete grátis para entrega no mesmo dia.',
     choices: [
       { text: '📋 Lista só do necessário', type: 'good',    xp: 40, score: +4, msg: 'Consumo consciente é superpoder! 🦸' },
-      { text: '🛒 Comprar muito mesmo',    type: 'bad',     xp: 5,  score: -3, msg: 'Tudo bem! Pense na próxima!' },
+      { text: '🛒 Comprar muito mesmo',    type: 'bad',     xp: 5,  score: -3, msg: 'Pense na próxima!' },
       { text: '⏸ Esperar e pensar',        type: 'neutral', xp: 20, score: +1, msg: 'Boa reflexão! Mindfulness de consumo! 🧘' },
     ],
   },
@@ -725,20 +916,113 @@ const DECISIONS = [
     question: 'Fim do dia: você vai ligar o ar condicionado ou abrir a janela?',
     context: 'A temperatura externa está em 24°C.',
     choices: [
-      { text: '🪟 Abrir a janela',       type: 'good', xp: 25, score: +2, msg: 'Economia de energia + zero emissões! ✨' },
-      { text: '❄️ Ligar o ar condicionado', type: 'bad', xp: 5, score: -2, msg: 'Considera o ventilador da próxima vez!' },
+      { text: '🪟 Abrir a janela',          type: 'good', xp: 25, score: +2, msg: 'Economia de energia + zero emissões! ✨' },
+      { text: '❄️ Ligar o ar condicionado', type: 'bad',  xp: 5,  score: -2, msg: 'Considera o ventilador da próxima vez!' },
     ],
   },
   {
     question: 'Sobrou comida do almoço. O que você faz?',
     context: 'Você tem tempo para guardar ou jogar fora.',
     choices: [
-      { text: '🍱 Guardar para amanhã',   type: 'good', xp: 30, score: +3, msg: 'Zero desperdício! Ação sustentável! 🌱' },
-      { text: '🗑 Jogar fora',             type: 'bad',  xp: 5,  score: -3, msg: 'Desperdício de alimento pesa! Guarde da próxima.' },
+      { text: '🍱 Guardar para amanhã', type: 'good', xp: 30, score: +3, msg: 'Zero desperdício! Ação sustentável! 🌱' },
+      { text: '🗑 Jogar fora',           type: 'bad',  xp: 5,  score: -3, msg: 'Desperdício pesa! Guarde da próxima.' },
+    ],
+  },
+
+  // ── NOVAS DECISÕES ──
+  {
+    question: 'Você recebeu um produto com excesso de embalagem.',
+    context: 'Tem papelão, plástico-bolha e isopor. O que você faz com tudo?',
+    choices: [
+      { text: '♻️ Separar e reciclar tudo', type: 'good',    xp: 35, score: +4, msg: 'Reciclagem correta! Menos lixo no aterro! ♻️' },
+      { text: '🗑 Jogar tudo no lixo comum', type: 'bad',     xp: 5,  score: -3, msg: 'Separar resíduos faz enorme diferença.' },
+      { text: '📦 Guardar para reutilizar',  type: 'neutral', xp: 20, score: +2, msg: 'Reutilização também é sustentabilidade!' },
+    ],
+  },
+  {
+    question: 'Você está no trabalho. Vai imprimir o documento?',
+    context: 'O documento tem 8 páginas e só você precisa ler.',
+    choices: [
+      { text: '📱 Ler no digital',          type: 'good', xp: 28, score: +3, msg: 'Papel zero! Árvores agradecem 🌳' },
+      { text: '🖨 Imprimir dos dois lados',  type: 'neutral', xp: 15, score: +1, msg: 'Pelo menos frente e verso! Mas digital é melhor.' },
+      { text: '🖨 Imprimir normal',          type: 'bad',  xp: 5,  score: -2, msg: 'Considere o digital na próxima vez.' },
+    ],
+  },
+  {
+    question: 'Banho quente no inverno. Quanto tempo você fica?',
+    context: 'Um banho de 15min consome 135L de água.',
+    choices: [
+      { text: '⚡ Máx 5 minutos',       type: 'good',    xp: 40, score: +5, msg: 'Herói da água! 💧 Enorme economia.' },
+      { text: '🚿 Uns 8 a 10 minutos',  type: 'neutral', xp: 18, score: +1, msg: 'Razoável! Tente reduzir mais 2 minutos.' },
+      { text: '😌 Banho longo mesmo',   type: 'bad',     xp: 5,  score: -3, msg: 'Cada minuto a menos = planeta mais saudável.' },
+    ],
+  },
+  {
+    question: 'Você viu um produto sem embalagem e com embalagem plástica.',
+    context: 'O preço é igual. Qual você escolhe?',
+    choices: [
+      { text: '🍎 Sem embalagem, claro!',  type: 'good', xp: 30, score: +4, msg: 'Escolha perfeita! Menos resíduo, mesmo produto.' },
+      { text: '📦 Com embalagem plástica', type: 'bad',  xp: 5,  score: -2, msg: 'Sem embalagem estava disponível... pense nisso.' },
+    ],
+  },
+  {
+    question: 'Seu celular ainda funciona bem. O que você faz?',
+    context: 'A marca lançou um modelo novo com poucas melhorias.',
+    choices: [
+      { text: '✅ Continuo com o atual',   type: 'good',    xp: 45, score: +5, msg: 'Consumo consciente! E-waste é problema global.' },
+      { text: '🤔 Vou pesquisar mais',     type: 'neutral', xp: 20, score: +2, msg: 'Boa reflexão antes de comprar.' },
+      { text: '📱 Trocar pelo novo',       type: 'bad',     xp: 5,  score: -3, msg: 'Lixo eletrônico é um dos mais tóxicos.' },
+    ],
+  },
+  {
+    question: 'Luzes acesas em cômodos que você não está usando.',
+    context: 'Você foi só tomar água na cozinha e voltou.',
+    choices: [
+      { text: '💡 Apago tudo ao sair',     type: 'good', xp: 22, score: +2, msg: 'Hábito simples, impacto real na conta e no planeta.' },
+      { text: '😴 Deixo aceso, dá preguiça', type: 'bad', xp: 5, score: -2, msg: 'Pequenos hábitos = grandes mudanças.' },
+    ],
+  },
+  {
+    question: 'Você tem roupas que não usa mais.',
+    context: 'Estão em bom estado e ficaram pequenas.',
+    choices: [
+      { text: '🎁 Doar ou trocar',       type: 'good',    xp: 35, score: +4, msg: 'Economia circular em ação! Excelente. 🔄' },
+      { text: '🛍 Vender online',         type: 'good',    xp: 30, score: +3, msg: 'Revenda sustentável! Menos desperdício têxtil.' },
+      { text: '🗑 Jogar fora',            type: 'bad',     xp: 5,  score: -3, msg: 'Indústria têxtil já é a 2ª maior poluidora. Doe!' },
+    ],
+  },
+  {
+    question: 'Hora de comprar mantimentos. Como você vai?',
+    context: 'O supermercado fica a 1,5km de casa.',
+    choices: [
+      { text: '🚶 A pé com ecobag',       type: 'good',    xp: 50, score: +6, msg: 'PERFEITO! Zero emissão + zero sacola plástica! 🌟' },
+      { text: '🚗 De carro rápido',       type: 'bad',     xp: 5,  score: -2, msg: 'A pé era viável aqui. Tente na próxima.' },
+      { text: '🛵 App de entrega',        type: 'neutral', xp: 15, score: -1, msg: 'Agrupa pedidos para reduzir entregas individuais.' },
+    ],
+  },
+  {
+    question: 'Restaurante te deu canudo plástico automaticamente.',
+    context: 'Você não pediu. Ainda não tocou no canudo.',
+    choices: [
+      { text: '🙅 Devolvo e informo',    type: 'good',    xp: 40, score: +4, msg: 'Conscientização + ação = mudança real! 💪' },
+      { text: '🤷 Deixo quieto',         type: 'neutral', xp: 10, score: 0,  msg: 'Você pode solicitar que não tragam mais.' },
+      { text: '🥤 Uso normalmente',      type: 'bad',     xp: 5,  score: -1, msg: 'Canudo plástico leva 200 anos para degradar.' },
+    ],
+  },
+  {
+    question: 'Você está comprando um presente. O que você escolhe?',
+    context: 'Tem duas opções de preço parecido.',
+    choices: [
+      { text: '🌿 Produto sustentável/local',  type: 'good',    xp: 38, score: +4, msg: 'Apoiar produção local reduz emissão de transporte!' },
+      { text: '📦 Produto importado famoso',   type: 'bad',     xp: 8,  score: -2, msg: 'Importado = cadeia de transporte muito maior.' },
+      { text: '🎭 Presentear com experiência', type: 'neutral', xp: 25, score: +2, msg: 'Experiências não geram resíduo. Boa escolha!' },
     ],
   },
 ];
 
+/* ════════════════════════════════════
+   DECISION ENGINE — handleDecision CORRIGIDO
+═════════════════════════════════════ */
 let currentDecision = 0;
 
 function generateDecision() {
@@ -746,61 +1030,91 @@ function generateDecision() {
   currentDecision++;
 
   $('dc-question').textContent = d.question;
-  $('dc-context').textContent = d.context;
+  $('dc-context').textContent  = d.context;
 
   const choicesEl = $('dc-choices');
   choicesEl.innerHTML = '';
   d.choices.forEach(c => {
     const btn = document.createElement('button');
-    btn.className = `dc-choice ${c.type}`;
+    btn.className   = `dc-choice ${c.type}`;
     btn.textContent = c.text;
     btn.addEventListener('click', () => handleDecision(c));
     choicesEl.appendChild(btn);
   });
 }
 
+/* ── HANDLE DECISION — função principal corrigida ── */
 function handleDecision(choice) {
-  // Update state
-  if (choice.type === 'good') {
-    gameState.stats.goodDecisions++;
-    gameState.stats.streak++;
-    gameState.stats.impactReduced += choice.score;
-  } else {
-    gameState.stats.streak = 0;
+  const s = gameState.stats;
+
+  // ── XP com bônus de streak ──
+  let xpGained = choice.xp;
+  if (choice.type === 'good' && s.streak >= 3) {
+    const bonus = Math.floor(xpGained * 0.2); // +20% por streak
+    xpGained += bonus;
   }
 
-  // Mascot sprite reaction
+  // ── Score delta ──
+  const scoreDelta = choice.score || 0;
+
+  // ── Atualiza stats ──
   if (choice.type === 'good') {
-    triggerMascotEvent("decisaoBoa");
+    s.goodDecisions++;
+    s.streak++;
+    s.consecutiveBad = 0;
+    s.impactReduced += Math.abs(scoreDelta);
   } else if (choice.type === 'bad') {
-    triggerMascotEvent("decisaoRuim");
+    s.badDecisions++;
+    s.consecutiveBad++;
+    // Penalidade leve por erro repetido
+    if (s.consecutiveBad >= 2) {
+      xpGained = Math.max(2, xpGained - 2);
+    }
+    if (s.streak > 0) s.streak = 0;
+  } else {
+    // neutral: não quebra streak mas também não avança
+    s.consecutiveBad = 0;
   }
 
-  addXP(choice.xp);
-  const newScore = Math.max(5, Math.min(100, gameState.stats.score + choice.score));
-  updateScore(newScore);
+  // ── Aplica XP e Score ──
+  addXP(xpGained);
+  updateScore(Math.min(100, Math.max(0, gameState.stats.score + scoreDelta)));
 
-  // Add to history
+  // ── Mascote reage ──
+  if (choice.type === 'good') {
+    triggerMascotEvent('decisaoBoa');
+    // Streak especial
+    if (s.streak >= 5) {
+      setTimeout(() => triggerMascotEvent('streakAlta'), 1500);
+    }
+  } else if (choice.type === 'bad') {
+    triggerMascotEvent('decisaoRuim');
+    if (s.consecutiveBad >= 2) {
+      setTimeout(() => triggerMascotEvent('erroConsecutivo'), 1500);
+    }
+  }
+
+  // ── Histórico ──
   addHistoryEntry({
-    icon: choice.type === 'good' ? '⚡' : '📌',
+    icon: choice.type === 'good' ? '⚡' : choice.type === 'bad' ? '❌' : '📌',
     text: choice.text,
-    xp: choice.xp,
+    xp:   xpGained,
     type: choice.type,
   });
 
-  // Toast
+  // ── Toast ──
   const toastType = choice.type === 'good' ? 'good' : choice.type === 'bad' ? 'bad' : 'info';
-  showToast(choice.msg, toastType, choice.type === 'good' ? '🌱' : '📌');
+  const toastIcon = choice.type === 'good' ? '🌱' : choice.type === 'bad' ? '⚠️' : '📌';
+  showToast(choice.msg, toastType, toastIcon);
 
-  // Update all stats
+  // ── Atualiza UI ──
   updateStatsUI();
 
-  // Next decision after delay
-  setTimeout(generateDecision, 800);
+  // ── Próxima decisão ──
+  setTimeout(generateDecision, 900);
 
-  // Check achievements
+  // ── Conquistas ──
   checkAchievements();
-
   saveGame();
 }
 
@@ -810,16 +1124,16 @@ function handleDecision(choice) {
 function renderActiveMission() {
   const m = gameState.activeMission;
   if (!m) {
-    $('am-title').textContent = 'Todas as missões completas! 🎉';
-    $('am-desc').textContent = 'Novas missões amanhã!';
+    $('am-title').textContent    = 'Todas as missões completas! 🎉';
+    $('am-desc').textContent     = 'Novas missões amanhã!';
     $('am-category').textContent = 'CONCLUÍDO';
     return;
   }
   $('am-category').textContent = m.category;
-  $('am-title').textContent = m.title;
-  $('am-desc').textContent = m.desc;
-  $('am-xp').textContent = m.xp;
-  $('am-score').textContent = m.scoreBonus;
+  $('am-title').textContent    = m.title;
+  $('am-desc').textContent     = m.desc;
+  $('am-xp').textContent       = m.xp;
+  $('am-score').textContent    = m.scoreBonus;
 }
 
 function renderMissionsList() {
@@ -859,19 +1173,16 @@ function completeMission(mission) {
   addHistoryEntry({
     icon: '🎯',
     text: `Missão: ${mission.title}`,
-    xp: mission.xp,
+    xp:   mission.xp,
     type: 'good',
   });
 
   showToast(`Missão "${mission.title}" completa! +${mission.xp} XP`, 'good', '🏆');
-
-  // Mascot sprite reaction
-  triggerMascotEvent("missaoCompleta");
+  triggerMascotEvent('missaoCompleta');
 
   updateStatsUI();
   renderMissionsList();
 
-  // Set next active mission
   const next = gameState.missions.find(m => !m.done);
   gameState.activeMission = next || null;
   renderActiveMission();
@@ -887,7 +1198,6 @@ function addHistoryEntry({ icon, text, xp, type }) {
   const entry = { icon, text, xp, type, time: Date.now() };
   gameState.history.unshift(entry);
   if (gameState.history.length > 50) gameState.history.pop();
-
   renderHistoryItem(entry, true);
 }
 
@@ -903,8 +1213,6 @@ function renderHistoryItem(entry, prepend = false) {
   `;
   if (prepend) hist.prepend(item);
   else hist.appendChild(item);
-
-  // Keep max 15 items visible
   while (hist.children.length > 15) hist.removeChild(hist.lastChild);
 }
 
@@ -914,9 +1222,12 @@ function renderHistoryItem(entry, prepend = false) {
 const ACHIEVEMENT_DEFS = [
   { id: 'first_decision',  name: 'Primeira Decisão',    icon: '⚡', condition: s => s.goodDecisions >= 1 },
   { id: 'five_decisions',  name: '5 Boas Decisões',     icon: '🌱', condition: s => s.goodDecisions >= 5 },
+  { id: 'ten_decisions',   name: '10 Boas Decisões',    icon: '💚', condition: s => s.goodDecisions >= 10 },
   { id: 'first_mission',   name: 'Primeira Missão',     icon: '🎯', condition: s => s.missionsCompleted >= 1 },
   { id: 'streak_3',        name: 'Sequência de 3',      icon: '🔥', condition: s => s.streak >= 3 },
+  { id: 'streak_5',        name: 'Sequência de 5',      icon: '🌊', condition: s => s.streak >= 5 },
   { id: 'score_70',        name: 'Score 70+',           icon: '📈', condition: s => s.score >= 70 },
+  { id: 'score_90',        name: 'Score 90+',           icon: '🌟', condition: s => s.score >= 90 },
   { id: 'level_3',         name: 'Level 3',             icon: '🏆', condition: s => s.level >= 3 },
   { id: 'level_5',         name: 'Level 5',             icon: '🌊', condition: s => s.level >= 5 },
   { id: 'missions_5',      name: '5 Missões Completas', icon: '🌿', condition: s => s.missionsCompleted >= 5 },
@@ -954,11 +1265,11 @@ function renderAchievements() {
 }
 
 /* ════════════════════════════════════
-   RECOMMENDATIONS (AI-simulated)
+   RECOMMENDATIONS
 ═════════════════════════════════════ */
 function buildRecommendations() {
   const recs = [];
-  const ans = gameState.diagnosticAnswers;
+  const ans  = gameState.diagnosticAnswers;
 
   if ((ans[0]?.weight || 0) >= 2)
     recs.push({ icon: '🍳', title: 'Reduza Delivery', text: 'Cozinhar em casa 3× por semana pode reduzir suas embalagens plásticas em até 60%.' });
@@ -979,7 +1290,7 @@ function buildRecommendations() {
 }
 
 function renderRecommendations() {
-  const recs = buildRecommendations();
+  const recs    = buildRecommendations();
   const content = $('recs-content');
   content.innerHTML = '';
   recs.forEach(r => {
@@ -998,15 +1309,13 @@ function renderRecommendations() {
 ═════════════════════════════════════ */
 function renderPredictionChart() {
   const canvas = $('predict-chart');
-  const ctx = canvas.getContext('2d');
+  const ctx    = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
 
   const current = gameState.stats.score;
-  const weeks = [current];
-
-  // Simulate future based on missions done
-  let sim = current;
+  const weeks   = [current];
+  let sim       = current;
   for (let i = 1; i <= 7; i++) {
     const improvement = gameState.stats.missionsCompleted > 0 ? 4 : 1;
     sim = Math.min(100, sim + improvement + (Math.random() * 2 - 0.5));
@@ -1017,14 +1326,13 @@ function renderPredictionChart() {
   const gW = W - padL - padR;
   const gH = H - padT - padB;
 
-  // Grid
   ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-  ctx.lineWidth = 1;
+  ctx.lineWidth   = 1;
   [0, 25, 50, 75, 100].forEach(v => {
     const y = padT + gH - (v / 100) * gH;
     ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + gW, y); ctx.stroke();
-    ctx.fillStyle = 'rgba(74,106,138,0.8)';
-    ctx.font = '9px Exo 2'; ctx.textAlign = 'right';
+    ctx.fillStyle   = 'rgba(74,106,138,0.8)';
+    ctx.font        = '9px Exo 2'; ctx.textAlign = 'right';
     ctx.fillText(v, padL - 4, y + 3);
   });
 
@@ -1033,7 +1341,6 @@ function renderPredictionChart() {
     y: padT + gH - (v / 100) * gH,
   }));
 
-  // Area
   const aGrad = ctx.createLinearGradient(0, padT, 0, padT + gH);
   aGrad.addColorStop(0, 'rgba(0,255,136,0.15)');
   aGrad.addColorStop(1, 'rgba(0,255,136,0)');
@@ -1044,7 +1351,6 @@ function renderPredictionChart() {
   ctx.closePath();
   ctx.fillStyle = aGrad; ctx.fill();
 
-  // Line
   const lineGrad = ctx.createLinearGradient(padL, 0, padL + gW, 0);
   lineGrad.addColorStop(0, '#ff5252');
   lineGrad.addColorStop(0.5, '#ffe600');
@@ -1054,7 +1360,6 @@ function renderPredictionChart() {
   points.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
   ctx.stroke();
 
-  // Points + labels
   const labels = ['Hoje', 'Sem2', 'Sem3', 'Sem4', 'Sem5', 'Sem6', 'Sem7', 'Sem8'];
   points.forEach((p, i) => {
     ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
@@ -1065,7 +1370,6 @@ function renderPredictionChart() {
     ctx.fillText(labels[i] || '', p.x, H - 6);
   });
 
-  // Prediction text
   const lastScore = weeks[weeks.length - 1];
   const cls = getClassification(lastScore);
   $('predict-text').innerHTML = `
@@ -1083,28 +1387,24 @@ function renderPredictionChart() {
 function updateStatsUI() {
   const s = gameState.stats;
 
-  // Stat cards
   animNum($('stat-missions'), s.missionsCompleted);
   animNum($('stat-decisions'), s.goodDecisions);
   animNum($('stat-streak'), s.streak);
   animNum($('stat-impact'), Math.max(0, s.impactReduced));
 
-  // HUD streak
   const hudStreak = $('hud-streak');
   if (hudStreak) hudStreak.textContent = s.streak;
 
-  // Env indicators
-  const pPct = Math.round((s.plastic / 9) * 100);
-  const ePct = Math.round((s.emission / 6) * 100);
-  const wPct = Math.round((s.waste / 15) * 100);
+  const pPct = Math.round((s.plastic  / 9)  * 100);
+  const ePct = Math.round((s.emission / 6)  * 100);
+  const wPct = Math.round((s.waste    / 15) * 100);
   $('bar-p').style.width = pPct + '%';
   $('bar-e').style.width = ePct + '%';
   $('bar-w').style.width = wPct + '%';
 
-  // Menu modal
-  const ms = $('ms-score');
+  const ms  = $('ms-score');
   if (ms) ms.textContent = s.score;
-  const mm = $('ms-missions');
+  const mm  = $('ms-missions');
   if (mm) mm.textContent = s.missionsCompleted;
 }
 
@@ -1125,8 +1425,6 @@ function triggerConfetti() {
     document.body.appendChild(div);
     setTimeout(() => div.remove(), 2500);
   }
-
-  // Add confetti keyframe once
   if (!document.getElementById('confetti-style')) {
     const style = document.createElement('style');
     style.id = 'confetti-style';
@@ -1138,16 +1436,15 @@ function triggerConfetti() {
 }
 
 /* ════════════════════════════════════
-   INIT GAME UI (after loading)
+   INIT GAME UI
 ═════════════════════════════════════ */
 function initGameUI() {
   const p = gameState.profile;
   const s = gameState.stats;
 
-  // HUD
-  $('hud-name').textContent = p.name;
-  $('hud-avatar').textContent = p.avatar;
-  $('menu-avatar').textContent = p.avatar;
+  $('hud-name').textContent         = p.name;
+  $('hud-avatar').textContent       = p.avatar;
+  $('menu-avatar').textContent      = p.avatar;
   $('menu-player-name').textContent = p.name;
 
   updateScore(s.score, true);
@@ -1160,22 +1457,25 @@ function initGameUI() {
 
   generateDecision();
 
-  // Animate history from saved
+  // Mascote inicia com fala
+  const bubble = $('main-bubble');
+  if (bubble) bubble.textContent = getMascotDialogue();
+
   if (gameState.history.length > 0) {
     const hist = $('action-history');
     hist.innerHTML = '';
     gameState.history.slice(0, 10).forEach(e => renderHistoryItem(e));
   }
 
-  // XP global bar
   updateLevel();
+  gameState.initialized = true;
 }
 
 /* ════════════════════════════════════
-   SCREEN 1 — ONBOARDING
+   ONBOARDING
 ═════════════════════════════════════ */
 function initOnboarding() {
-  const hasSaved = hasSave();
+  const hasSaved    = hasSave();
   const continueBtn = $('btn-continue');
   if (hasSaved) continueBtn.classList.remove('hidden');
 
@@ -1189,13 +1489,13 @@ function initOnboarding() {
     const save = loadGame();
     if (save) {
       Object.assign(gameState.profile, save.profile || {});
-      Object.assign(gameState.stats, save.stats || {});
-      gameState.history = save.history || [];
-      gameState.missions = save.missions || [];
-      gameState.activeMission = save.activeMission || null;
-      gameState.achievements = save.achievements || buildAchievements();
+      Object.assign(gameState.stats,   save.stats   || {});
+      gameState.history           = save.history           || [];
+      gameState.missions          = save.missions          || [];
+      gameState.activeMission     = save.activeMission     || null;
+      gameState.achievements      = save.achievements      || buildAchievements();
       gameState.diagnosticAnswers = save.diagnosticAnswers || [];
-      gameState.initialized = true;
+      gameState.initialized       = true;
 
       if (!gameState.missions.length) gameState.missions = generateMissions();
       if (!gameState.activeMission) gameState.activeMission = gameState.missions.find(m => !m.done) || null;
@@ -1208,11 +1508,11 @@ function initOnboarding() {
 }
 
 /* ════════════════════════════════════
-   SCREEN 2 — CHARACTER CREATION
+   CHARACTER CREATION
 ═════════════════════════════════════ */
 function initCharScreen() {
   const nameInput = $('player-name-input');
-  const nextBtn = $('btn-char-next');
+  const nextBtn   = $('btn-char-next');
 
   nameInput.addEventListener('input', () => {
     nextBtn.disabled = nameInput.value.trim().length < 2;
@@ -1227,9 +1527,9 @@ function initCharScreen() {
   });
 
   nextBtn.addEventListener('click', () => {
-    gameState.profile.name = nameInput.value.trim() || 'Jogador';
-    gameState.profile.avatar = gameState.selectedAvatar;
-    gameState.profile.id = `user_${Date.now()}`;
+    gameState.profile.name      = nameInput.value.trim() || 'Jogador';
+    gameState.profile.avatar    = gameState.selectedAvatar;
+    gameState.profile.id        = `user_${Date.now()}`;
     gameState.profile.createdAt = Date.now();
 
     currentQ = 0;
@@ -1247,11 +1547,11 @@ $('btn-lu-close').addEventListener('click', () => {
 
 $('btn-menu').addEventListener('click', () => {
   const s = gameState.stats;
-  $('ms-score').textContent    = s.score;
-  $('ms-level').textContent    = s.level;
-  $('ms-xp').textContent       = s.xp;
-  $('ms-missions').textContent = s.missionsCompleted;
-  $('menu-avatar').textContent = gameState.profile.avatar;
+  $('ms-score').textContent        = s.score;
+  $('ms-level').textContent        = s.level;
+  $('ms-xp').textContent           = s.xp;
+  $('ms-missions').textContent     = s.missionsCompleted;
+  $('menu-avatar').textContent     = gameState.profile.avatar;
   $('menu-player-name').textContent = gameState.profile.name;
   $('menu-player-title').textContent = getLevelData(s.level).title;
   $('modal-menu').classList.remove('hidden');
@@ -1307,7 +1607,7 @@ $('btn-mission-skip').addEventListener('click', () => {
 });
 
 $('btn-refresh-missions').addEventListener('click', () => {
-  gameState.missions = generateMissions();
+  gameState.missions      = generateMissions();
   gameState.activeMission = gameState.missions[0];
   renderMissionsList();
   renderActiveMission();
@@ -1316,7 +1616,7 @@ $('btn-refresh-missions').addEventListener('click', () => {
 });
 
 /* ════════════════════════════════════
-   AUTO-SAVE every 30 seconds
+   AUTO-SAVE
 ═════════════════════════════════════ */
 setInterval(() => {
   if (gameState.initialized || gameState.stats.score > 0) saveGame();
@@ -1326,7 +1626,6 @@ setInterval(() => {
    BOOT
 ═════════════════════════════════════ */
 (function boot() {
-  // Initialize screens
   document.querySelectorAll('.screen').forEach(s => {
     s.style.display = 'none';
     s.classList.remove('active');

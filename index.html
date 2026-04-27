@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<!-- ░░░ MAIN HEADER (UNIFICADO) ░░░ -->
+<!-- ░░░ MAIN HEADER ░░░ -->
 <header class="main-header">
   <div class="main-header-left">
     <a href="index.html" class="main-header-logo">
@@ -37,10 +37,19 @@
 <!-- ░░░ XP POPUP ░░░ -->
 <div id="xp-popup" class="xp-popup hidden"></div>
 
-<!-- SCREEN: ONBOARDING -->
+<!-- ══════════════════════════════════
+     SCREEN: ONBOARDING — MELHORADO
+═══════════════════════════════════ -->
 <section id="screen-onboarding" class="screen active">
   <div class="onboard-bg-grid"></div>
+
+  <!-- Efeito de glow dinâmico no fundo -->
+  <div class="onboard-glow-orb orb-1"></div>
+  <div class="onboard-glow-orb orb-2"></div>
+
   <div class="onboard-content">
+
+    <!-- Logo principal -->
     <div class="game-logo">
       <div class="logo-glow"></div>
       <span class="logo-icon">♻</span>
@@ -50,44 +59,71 @@
       </div>
     </div>
 
+    <!-- Badge de versão premium -->
+    <div class="premium-badge">
+      <span class="pb-dot"></span>
+      <span>Sistema de IA Ativo</span>
+      <span class="pb-sep">·</span>
+      <span>v2.0</span>
+    </div>
+
+    <!-- Mascote com efeito visual melhorado -->
     <div class="mascot-intro" id="mascot-intro">
-      <div class="mascot-body" id="mascot-onboard">
-        <div class="mascot-face" id="mascot-face-onboard">
-          <div class="mascot-eyes"><span class="eye"></span><span class="eye"></span></div>
-          <div class="mascot-mouth happy"></div>
-        </div>
-        <div class="mascot-arms">
-          <span class="arm arm-l">🌿</span>
-          <span class="arm arm-r">🌿</span>
+      <div class="mascot-intro-wrap">
+        <!-- Anel de aura pulsante ao redor do mascote -->
+        <div class="mascot-intro-aura"></div>
+        <div class="mascot-body mascot-lg" id="mascot-onboard">
+          <div class="mascot-face" id="mascot-face-onboard">
+            <div class="mascot-eyes"><span class="eye"></span><span class="eye"></span></div>
+            <div class="mascot-mouth happy"></div>
+          </div>
+          <div class="mascot-arms">
+            <span class="arm arm-l">🌿</span>
+            <span class="arm arm-r">🌿</span>
+          </div>
         </div>
       </div>
-      <div class="speech-bubble" id="bubble-onboard">
-        Olá! Sou o <strong>Recyclinho</strong>! Vamos salvar o planeta juntos? 🌍
+      <div class="speech-bubble speech-intro" id="bubble-onboard">
+        Olá! Sou o <strong>Recyclinho</strong>! Cada decisão sua muda o planeta. Vamos começar? 🌍
       </div>
     </div>
 
-    <h1 class="hero-title">Seu planeta.<br><em>Sua missão.</em></h1>
-    <p class="hero-desc">Um jogo de evolução onde cada decisão molda o futuro do meio ambiente — e o seu perfil.</p>
+    <!-- Título + subtítulo reforçado -->
+    <div class="hero-text-block">
+      <h1 class="hero-title">Seu planeta.<br><em>Sua missão.</em></h1>
+      <p class="hero-subtitle">
+        Um RPG de decisões ambientais com IA.<br>
+        <strong>Escolhas reais. Impacto real.</strong>
+      </p>
+    </div>
 
+    <!-- Badges de features -->
     <div class="onboard-stats">
-      <div class="stat-pill">🎮 Sistema de missões</div>
+      <div class="stat-pill">🎮 Missões diárias</div>
       <div class="stat-pill">⚡ Decisões em tempo real</div>
       <div class="stat-pill">🏆 10 níveis de evolução</div>
+      <div class="stat-pill">🤖 IA personalizada</div>
     </div>
 
-    <button id="btn-new-game" class="btn-primary btn-glow">
-      <span class="btn-icon">▶</span> Novo Jogo
-    </button>
-    <button id="btn-continue" class="btn-secondary hidden">
-      <span class="btn-icon">↩</span> Continuar Jogo
-    </button>
+    <!-- CTAs principais — melhorados -->
+    <div class="onboard-ctas">
+      <button id="btn-new-game" class="btn-primary btn-glow btn-cta-main">
+        <span class="btn-icon">▶</span>
+        <span class="btn-text-main">Começar Missão</span>
+        <span class="btn-text-sub">Diagnóstico gratuito</span>
+      </button>
+      <button id="btn-continue" class="btn-secondary hidden">
+        <span class="btn-icon">↩</span> Continuar Jogo
+      </button>
+    </div>
 
+    <!-- Links para outros jogos -->
     <div class="onboard-game-links">
       <a href="game1.html" class="btn-secondary"><span class="btn-icon">🎯</span> ReCatch Game</a>
       <a href="game2.html" class="btn-secondary"><span class="btn-icon">💎</span> Recyclo Crush</a>
     </div>
 
-    <p class="version-tag">v2.0 · Save automático ativo</p>
+    <p class="version-tag">v2.0 · Save automático ativo · Progresso protegido</p>
   </div>
 </section>
 
@@ -232,26 +268,25 @@
   <div class="game-layout">
 
     <aside class="game-aside">
-
       <div class="char-panel" id="char-panel">
         <div class="char-panel-bg"></div>
         <div class="mascot-container">
           <div class="mascot-body mascot-md" id="mascot-main">
-            <div class="mascot-face">
-              <div class="mascot-eyes"><span class="eye"></span><span class="eye"></span></div>
-              <div class="mascot-mouth happy" id="main-mouth"></div>
-            </div>
-            <div class="mascot-arms">
-              <span class="arm arm-l" id="main-arm-l">🌿</span>
-              <span class="arm arm-r" id="main-arm-r">🌿</span>
-            </div>
+            <img 
+              id="mascot-img"
+              src="expressoesreciclinho/animado.png" 
+              alt="Recyclinho"
+              class="mascot-img"
+            />
             <div class="mascot-aura" id="mascot-aura"></div>
           </div>
           <div class="speech-bubble speech-main" id="main-bubble">
-            Vamos lá! Complete suas missões hoje! 💪
+            Estou analisando suas ações... 🤖🌱
           </div>
         </div>
-        <div class="char-mood-label" id="mood-label">😊 Animado</div>
+        <div class="char-mood-label" id="mood-label">
+          🤖 IA Observando
+        </div>
       </div>
 
       <div class="mission-panel" id="mission-panel">
@@ -273,7 +308,6 @@
           </div>
         </div>
       </div>
-
     </aside>
 
     <main class="game-main">
@@ -348,7 +382,6 @@
     </main>
 
     <aside class="game-right">
-
       <div class="panel missions-list-panel">
         <div class="panel-title"><span class="panel-icon">📋</span> MISSÕES DO DIA</div>
         <div id="missions-list" class="missions-list"></div>
@@ -359,7 +392,6 @@
         <div class="panel-title"><span class="panel-icon">📜</span> HISTÓRICO</div>
         <div id="action-history" class="action-history"></div>
       </div>
-
     </aside>
 
   </div>
@@ -444,16 +476,12 @@
 <!-- FOOTER -->
 <footer class="main-footer">
   <div class="footer-content">
-
     <div class="footer-left">
-      <div class="footer-logo">
-        ♻ <span>ReCyclo</span>
-      </div>
+      <div class="footer-logo">♻ <span>ReCyclo</span></div>
       <p class="footer-desc">
         Um jogo de evolução sustentável onde cada decisão impacta o futuro do planeta.
       </p>
     </div>
-
     <div class="footer-links">
       <a href="index.html">Home</a>
       <a href="game1.html">ReCatch</a>
@@ -461,9 +489,7 @@
       <a href="sobre-nos.html">Sobre</a>
       <a href="faq.html">FAQ</a>
     </div>
-
   </div>
-
   <div class="footer-bottom">
     © 2026 ReCyclo. Todos os direitos reservados.
   </div>
