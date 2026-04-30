@@ -758,6 +758,10 @@
     setBubble('📬 Link enviado para <strong>' + email + '</strong>!');
     document.getElementById('forgot-success').classList.add('show');
   }
-</script>
+ // Esta chave fecha a função doForgot ou setBubble
+</script> 
+
+<!-- Agora sim você chama o arquivo externo fora de qualquer outra tag <script> -->
+<script type="module" src="auth.js"></script>
 </body>
-</html>
+</html> 
