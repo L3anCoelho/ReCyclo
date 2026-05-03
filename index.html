@@ -1,500 +1,733 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ReCyclo — Jogo de Evolução Sustentável</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
+
+  <!-- ── Google Fonts ── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600&family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<!-- ░░░ MAIN HEADER ░░░ -->
-<header class="main-header">
-  <div class="main-header-left">
-    <a href="index.html" class="main-header-logo">
-      <span class="logo-icon">♻</span>
-      <span class="logo-text">ReCyclo</span>
+<!-- ══════════════════════════════════════════════════════
+     NAVIGATION — Fixed global header
+══════════════════════════════════════════════════════════ -->
+<header class="main-header" role="banner">
+  <div class="main-header__left">
+    <a href="index.html" class="main-header__logo" aria-label="ReCyclo — Página Inicial">
+      <span class="main-header__logo-icon" aria-hidden="true">♻</span>
+      <span class="main-header__logo-text">ReCyclo</span>
     </a>
   </div>
-  <nav class="main-header-nav">
-    <a href="index.html" class="nav-btn">Home</a>
-    <a href="game1.html" class="nav-btn">ReCatch</a>
-    <a href="game2.html" class="nav-btn">Recyclo Crush</a>
-    <a href="sobre-nos.html" class="nav-btn alt">Sobre Nós</a>
-    <a href="faq.html" class="nav-btn alt">FAQ</a>
+
+  <nav class="main-header__nav" role="navigation" aria-label="Navegação principal">
+    <a href="index.html"    class="nav-btn">Home</a>
+    <a href="game1.html"    class="nav-btn">ReCatch</a>
+    <a href="game2.html"    class="nav-btn">Recyclo Crush</a>
+    <a href="sobre-nos.html" class="nav-btn nav-btn--alt">Sobre Nós</a>
+    <a href="faq.html"      class="nav-btn nav-btn--alt">FAQ</a>
   </nav>
 </header>
+<!-- Barra do jogo: moedas + navegação (aparece só na tela do jogo) -->
+<div class="ng-game-nav">
+  <div class="ng-game-nav__coins" id="hud-coins-chip">
+    ◈ <span id="hud-coins">0</span> moedas
+  </div>
 
-<!-- ░░░ PARTICLE CANVAS ░░░ -->
-<canvas id="particle-bg"></canvas>
+  <div class="ng-game-nav__tabs">
+    <button class="ng-game-nav__tab ng-game-nav__tab--active" id="btn-nav-game">⚡ Jogo</button>
+    <button class="ng-game-nav__tab" id="btn-nav-ranked">🏆 Ranked</button>
+    <button class="ng-game-nav__tab" id="btn-nav-shop">◈ Loja</button>
+  </div>
 
-<!-- ░░░ TOAST NOTIFICATIONS ░░░ -->
-<div id="toast-container"></div>
+  <div class="ng-game-nav__xp-bar">
+    <div class="ng-topbar__xp-fill" id="xp-bar-fill"></div>
+  </div>
+</div>
 
-<!-- ░░░ XP POPUP ░░░ -->
-<div id="xp-popup" class="xp-popup hidden"></div>
 
-<!-- ══════════════════════════════════
-     SCREEN: ONBOARDING — MELHORADO
-═══════════════════════════════════ -->
-<section id="screen-onboarding" class="screen active">
-  <div class="onboard-bg-grid"></div>
+<!-- ══════════════════════════════════════════════════════
+     BACKGROUND — Particle canvas (global)
+══════════════════════════════════════════════════════════ -->
+<canvas id="particle-bg" aria-hidden="true"></canvas>
 
-  <!-- Efeito de glow dinâmico no fundo -->
-  <div class="onboard-glow-orb orb-1"></div>
-  <div class="onboard-glow-orb orb-2"></div>
 
-  <div class="onboard-content">
+<!-- ══════════════════════════════════════════════════════
+     NOTIFICATIONS — Toast & XP popup (global)
+══════════════════════════════════════════════════════════ -->
+<div id="toast-container" role="status" aria-live="polite"></div>
+<div id="xp-popup" class="xp-popup xp-popup--hidden" aria-hidden="true"></div>
 
-    <!-- Logo principal -->
-    <div class="game-logo">
-      <div class="logo-glow"></div>
-      <span class="logo-icon">♻</span>
-      <div class="logo-words">
-        <span class="logo-main">ReCyclo</span>
-        <span class="logo-sub">Survival Edition</span>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN: ONBOARDING
+══════════════════════════════════════════════════════════ -->
+<div id="screen-onboarding" class="screen">
+  <!-- Background effects -->
+  <div class="onboard__bg-grid"></div>
+  <div class="onboard__glow-orb onboard__glow-orb--1"></div>
+  <div class="onboard__glow-orb onboard__glow-orb--2"></div>
+
+  <!-- Layout 3 colunas: imagem | menu | imagem -->
+  <div class="onboard__3col">
+
+    <!-- ── COLUNA ESQUERDA: Slot de imagem ── -->
+    <div class="onboard__img-slot onboard__img-slot--left">
+      <img src="menu1.png" alt="Imagem decorativa esquerda" class="onboard__side-img" id="onboard-img-left" />
+      <div class="onboard__img-placeholder">
+        <span>🖼</span>
+        <small>imagem criativa</small>
       </div>
     </div>
 
-    <!-- Badge de versão premium -->
-    <div class="premium-badge">
-      <span class="pb-dot"></span>
-      <span>Sistema de IA Ativo</span>
-      <span class="pb-sep">·</span>
-      <span>v2.0</span>
-    </div>
+    <!-- ── COLUNA CENTRAL: Mascote + Menu ── -->
+    <div class="onboard__content onboard__content--menu">
 
-    <!-- Mascote com efeito visual melhorado -->
-    <div class="mascot-intro" id="mascot-intro">
-      <div class="mascot-intro-wrap">
-        <!-- Anel de aura pulsante ao redor do mascote -->
-        <div class="mascot-intro-aura"></div>
-        <div class="mascot-body mascot-lg" id="mascot-onboard">
-          <div class="mascot-face" id="mascot-face-onboard">
-            <div class="mascot-eyes"><span class="eye"></span><span class="eye"></span></div>
-            <div class="mascot-mouth happy"></div>
-          </div>
-          <div class="mascot-arms">
-            <span class="arm arm-l">🌿</span>
-            <span class="arm arm-r">🌿</span>
-          </div>
+      <!-- Logo & Branding -->
+      <div class="game-logo">
+        <div class="game-logo__glow"></div>
+        <div class="game-logo__icon">♻️</div>
+        <div class="game-logo__words">
+          <span class="game-logo__main">Recyclo</span>
+          <span class="game-logo__sub">Sistema de Apoio Inteligente</span>
         </div>
       </div>
-      <div class="speech-bubble speech-intro" id="bubble-onboard">
-        Olá! Sou o <strong>Recyclinho</strong>! Cada decisão sua muda o planeta. Vamos começar? 🌍
+
+      <!-- Mascote + Balão (balão ACIMA, mascote ABAIXO) -->
+      <div class="mascot-intro mascot-intro--side">
+        <!-- Balão de fala acima -->
+        <div id="bubble-onboard" class="speech-bubble speech-bubble--above">
+          Bem-vindo ao Recyclo! Melhore seus hábitos de reciclagem e ganhe recompensas por isso.
+        </div>
+        <!-- Mascote abaixo do balão — sprite real do Recyclinho -->
+        <div class="mascot-intro__wrap">
+          <img
+            id="mascot-onboard"
+            src="expressoesreciclinho/animado.png"
+            alt="Recyclinho - Mascote"
+          />
+        </div>
+      </div>
+
+      <!-- Hero Text -->
+      <div class="onboard__hero">
+        <h1 class="onboard__title">
+          Seu planeta.<br>
+          <em>Sua missão.</em>
+        </h1>
+      </div>
+
+      <!-- ── Menu principal (único, sem etapas) ── -->
+      <div class="onboard__main-menu" id="onboard-step-1">
+        <div class="menu-section-label">MENU PRINCIPAL</div>
+
+        <div id="onboard-level-badge" class="onboard__level-badge onboard__level-badge--hidden">
+          <span class="onboard__level-badge__icon">🏅</span>
+          <span id="onboard-level-text" class="onboard__level-badge__text">Nível 1 — Iniciante</span>
+        </div>
+
+        <button id="btn-new-game" class="menu-item menu-item--primary">
+          <span class="menu-item__icon">▶</span>
+          <div class="menu-item__labels">
+            <span class="menu-item__main">Começar novo jogo</span>
+            <span class="menu-item__sub">Cria um novo perfil do zero</span>
+          </div>
+        </button>
+
+        <button id="btn-continue" class="menu-item menu-item--secondary">
+          <span class="menu-item__icon">♻️</span>
+          <div class="menu-item__labels">
+            <span class="menu-item__main">Continuar jogo</span>
+            <span id="btn-continue-sub" class="menu-item__sub">Retomar de onde parou</span>
+          </div>
+        </button>
+
+        <a href="game1.html" class="menu-item menu-item--mode">
+          <span class="menu-item__icon"></span>
+          <div class="menu-item__labels">
+            <span class="menu-item__main">ReCatch Game</span>
+            <span class="menu-item__sub">Capture e classifique resíduos</span>
+          </div>
+        </a>
+
+        <a href="game2.html" class="menu-item menu-item--mode">
+          <span class="menu-item__icon"></span>
+          <div class="menu-item__labels">
+            <span class="menu-item__main">Recyclo Crush</span>
+            <span class="menu-item__sub">Combine e recicle elementos</span>
+          </div>
+        </a>
+      </div>
+
+      <small class="onboard__version-tag">v2.0 · Save automático ativo · Progresso protegido</small>
+    </div>
+
+    <!-- ── COLUNA DIREITA: Slot de imagem ── -->
+    <div class="onboard__img-slot onboard__img-slot--right">
+      <img src="menu2.png" alt="Imagem decorativa direita" class="onboard__side-img" id="onboard-img-right" />
+      <div class="onboard__img-placeholder">
+        <span>🖼</span>
+        <small>imagem criativa</small>
       </div>
     </div>
 
-    <!-- Título + subtítulo reforçado -->
-    <div class="hero-text-block">
-      <h1 class="hero-title">Seu planeta.<br><em>Sua missão.</em></h1>
-      <p class="hero-subtitle">
-        Um RPG de decisões ambientais com IA.<br>
-        <strong>Escolhas reais. Impacto real.</strong>
-      </p>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN: CHARACTER CREATION
+══════════════════════════════════════════════════════════ -->
+<section id="screen-char" class="screen" role="main" aria-label="Criação de personagem">
+  <div class="char-creation">
+
+    <!-- Mascot preview — sprite real -->
+    <div class="char-creation__mascot" aria-hidden="true">
+      <img
+        src="expressoesreciclinho/feliz.png"
+        alt="Recyclinho feliz"
+        class="char-creation__mascot-img"
+      />
     </div>
 
-    <!-- Badges de features -->
-    <div class="onboard-stats">
-      <div class="stat-pill">🎮 Missões diárias</div>
-      <div class="stat-pill">⚡ Decisões em tempo real</div>
-      <div class="stat-pill">🏆 10 níveis de evolução</div>
-      <div class="stat-pill">🤖 IA personalizada</div>
+    <!-- Creation form -->
+    <div class="char-creation__form">
+      <span class="step-tag">PASSO 1 DE 2 — IDENTIDADE</span>
+      <h2 class="char-creation__title">Como devo te chamar?</h2>
+
+      <input
+        type="text"
+        id="player-name-input"
+        class="text-input"
+        placeholder="Seu nome ou apelido..."
+        maxlength="20"
+        autocomplete="off"
+      />
+
+      <div class="avatar-picker">
+        <p class="avatar-picker__label">Escolha seu emblema:</p>
+        <div class="avatar-picker__grid" role="listbox" aria-label="Escolha de avatar">
+          <button class="avatar-opt avatar-opt--selected" data-avatar="🌱" role="option" aria-selected="true">🌱</button>
+          <button class="avatar-opt" data-avatar="🌿" role="option" aria-selected="false">🌿</button>
+          <button class="avatar-opt" data-avatar="🍃" role="option" aria-selected="false">🍃</button>
+          <button class="avatar-opt" data-avatar="🌊" role="option" aria-selected="false">🌊</button>
+          <button class="avatar-opt" data-avatar="⚡" role="option" aria-selected="false">⚡</button>
+          <button class="avatar-opt" data-avatar="🔥" role="option" aria-selected="false">🔥</button>
+        </div>
+      </div>
+
+      <button id="btn-char-next" class="btn btn--primary" disabled>Continuar →</button>
     </div>
 
-    <!-- CTAs principais — melhorados -->
-    <div class="onboard-ctas">
-      <button id="btn-new-game" class="btn-primary btn-glow btn-cta-main">
-        <span class="btn-icon">▶</span>
-        <span class="btn-text-main">Começar Missão</span>
-        <span class="btn-text-sub">Diagnóstico gratuito</span>
-      </button>
-      <button id="btn-continue" class="btn-secondary hidden">
-        <span class="btn-icon">↩</span> Continuar Jogo
-      </button>
-    </div>
-
-    <!-- Links para outros jogos -->
-    <div class="onboard-game-links">
-      <a href="game1.html" class="btn-secondary"><span class="btn-icon">🎯</span> ReCatch Game</a>
-      <a href="game2.html" class="btn-secondary"><span class="btn-icon">💎</span> Recyclo Crush</a>
-    </div>
-
-    <p class="version-tag">v2.0 · Save automático ativo · Progresso protegido</p>
   </div>
 </section>
 
-<!-- SCREEN: CHARACTER CREATION -->
-<section id="screen-char" class="screen">
-  <div class="char-wrap">
-    <div class="char-mascot-big">
-      <div class="mascot-body mascot-lg">
-        <div class="mascot-face">
-          <div class="mascot-eyes"><span class="eye"></span><span class="eye"></span></div>
-          <div class="mascot-mouth happy"></div>
-        </div>
-        <div class="mascot-arms">
-          <span class="arm arm-l">👋</span>
-          <span class="arm arm-r">🌱</span>
-        </div>
-      </div>
-    </div>
-    <div class="char-form">
-      <div class="step-tag">PASSO 1 DE 2 — IDENTIDADE</div>
-      <h2 class="char-title">Como devo te chamar?</h2>
-      <input type="text" id="player-name-input" class="name-input" placeholder="Seu nome ou apelido..." maxlength="20"/>
-      <div class="char-avatar-pick">
-        <p class="pick-label">Escolha seu emblema:</p>
-        <div class="avatar-grid">
-          <button class="avatar-opt selected" data-avatar="🌱">🌱</button>
-          <button class="avatar-opt" data-avatar="🌿">🌿</button>
-          <button class="avatar-opt" data-avatar="🍃">🍃</button>
-          <button class="avatar-opt" data-avatar="🌊">🌊</button>
-          <button class="avatar-opt" data-avatar="⚡">⚡</button>
-          <button class="avatar-opt" data-avatar="🔥">🔥</button>
-        </div>
-      </div>
-      <button id="btn-char-next" class="btn-primary" disabled>Continuar →</button>
-    </div>
-  </div>
-</section>
 
-<!-- SCREEN: QUIZ -->
-<section id="screen-quiz" class="screen">
+<!-- ══════════════════════════════════════════════════════
+     SCREEN: DIAGNOSTIC QUIZ
+     ── MODIFICADO: mascote usa <img> real, contador /10 ──
+══════════════════════════════════════════════════════════ -->
+<section id="screen-quiz" class="screen" role="main" aria-label="Quiz de diagnóstico ambiental">
   <div class="quiz-shell">
-    <header class="quiz-hdr">
-      <div class="hdr-logo">♻ ReCyclo</div>
-      <div class="hdr-sync">
-        <span class="sync-dot"></span>
+
+    <!-- Quiz header -->
+    <header class="quiz-header">
+      <div class="quiz-header__logo">♻ ReCyclo</div>
+      <div class="quiz-header__sync">
+        <span class="sync-dot" aria-hidden="true"></span>
         <span id="sync-label">Diagnóstico ambiental ativo...</span>
       </div>
-      <div class="hdr-progress-text"><span id="q-current">1</span>/5</div>
+      <!-- MODIFICADO: /10 agora usa id=q-total para ser atualizado pelo JS -->
+      <div class="quiz-header__progress-text">
+        <span id="q-current">1</span>/<span id="q-total">10</span>
+      </div>
     </header>
 
-    <div class="quiz-progress-track">
-      <div id="quiz-progress-fill" class="quiz-prog-fill"></div>
+    <!-- Progress bar -->
+    <div class="quiz-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10">
+      <div id="quiz-progress-fill" class="quiz-progress__fill"></div>
     </div>
 
-    <div class="quiz-mascot-float">
-      <div class="mascot-body mascot-sm" id="mascot-quiz">
-        <div class="mascot-face">
-          <div class="mascot-eyes"><span class="eye"></span><span class="eye"></span></div>
-          <div class="mascot-mouth happy" id="quiz-mouth"></div>
-        </div>
+    <!-- ══════════════════════════════════════════════
+         MASCOTE DO QUIZ — substituído por sprite real
+         id="mascot-quiz-img" é controlado pelo JS
+    ══════════════════════════════════════════════ -->
+    <div class="quiz-mascot">
+      <div class="quiz-mascot__sprite-wrap" aria-hidden="true">
+        <img
+          id="mascot-quiz-img"
+          src="expressoesreciclinho/animado.png"
+          alt="Recyclinho"
+          class="quiz-mascot__img"
+        />
       </div>
-      <div class="speech-bubble speech-sm" id="quiz-bubble">Pense bem antes de responder! 🤔</div>
-    </div>
-
-    <div id="question-card" class="q-card">
-      <div class="q-meta">
-        <span class="q-tag" id="q-tag"></span>
-        <span class="q-xp-reward" id="q-xp">+20 XP</span>
+      <div class="speech-bubble speech-bubble--sm" id="quiz-bubble">
+        Pense bem antes de responder! 🤔
       </div>
-      <h2 class="q-text" id="q-text"></h2>
-      <div class="q-options" id="q-options"></div>
     </div>
 
-    <div class="quiz-lore" id="quiz-lore">
-      <span class="lore-icon">💡</span>
+    <!-- Question card -->
+    <article id="question-card" class="question-card">
+      <div class="question-card__meta">
+        <span class="question-card__tag" id="q-tag"></span>
+        <span class="question-card__xp" id="q-xp">+20 XP</span>
+      </div>
+      <h2 class="question-card__text" id="q-text"></h2>
+      <div class="question-card__options" id="q-options"></div>
+    </article>
+
+    <!-- Lore / fun fact -->
+    <div class="quiz-lore" id="quiz-lore" role="note">
+      <span class="quiz-lore__icon" aria-hidden="true">💡</span>
       <span id="lore-text">Cada resposta calibra seu perfil ambiental.</span>
     </div>
+
   </div>
 </section>
 
-<!-- SCREEN: ANALYSIS LOADING -->
-<section id="screen-loading" class="screen">
-  <div class="load-inner">
-    <div class="load-mascot">
-      <div class="mascot-body mascot-lg load-bounce">
-        <div class="mascot-face">
-          <div class="mascot-eyes"><span class="eye"></span><span class="eye"></span></div>
-          <div class="mascot-mouth happy"></div>
-        </div>
-        <div class="load-sparkles">
-          <span>✨</span><span>🌿</span><span>⚡</span>
-        </div>
-      </div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN: ANALYSIS LOADING
+══════════════════════════════════════════════════════════ -->
+<section id="screen-loading" class="screen" role="main" aria-label="Analisando seu perfil">
+  <div class="loading-screen">
+
+    <!-- Mascote animado durante loading — sprite real -->
+    <div class="loading-screen__mascot" aria-hidden="true">
+      <img
+        src="expressoesreciclinho/animado.png"
+        alt="Recyclinho analisando"
+        class="loading-screen__mascot-img"
+      />
     </div>
-    <h2 class="load-title" id="load-title">Inicializando perfil...</h2>
-    <div class="load-bar-wrap"><div class="load-bar-fill" id="load-bar"></div></div>
-    <p class="load-sub" id="load-sub">Processando dados ambientais</p>
-    <div class="load-steps" id="load-steps"></div>
+
+    <h2 class="loading-screen__title" id="load-title">Inicializando perfil...</h2>
+
+    <div class="loading-screen__bar-wrap" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="loading-screen__bar-fill" id="load-bar"></div>
+    </div>
+
+    <p class="loading-screen__subtitle" id="load-sub">Processando dados ambientais</p>
+    <div class="loading-screen__steps" id="load-steps" aria-live="polite"></div>
+
   </div>
 </section>
 
-<!-- SCREEN: MAIN GAME -->
-<section id="screen-game" class="screen">
 
-  <div class="game-hud">
-    <div class="hud-left">
-      <div class="hud-logo">♻</div>
-      <div class="hud-player">
-        <span id="hud-avatar">🌱</span>
-        <span id="hud-name">Jogador</span>
-      </div>
+<!-- ══════════════════════════════════════════════════════
+     SCREEN: MAIN GAME — layout novo (fusão teste.html)
+══════════════════════════════════════════════════════════ -->
+<section id="screen-game" class="screen" role="main" aria-label="Jogo principal">
+
+  <!-- Fundos decorativos -->
+  <div class="ng-bg-grid" aria-hidden="true"></div>
+  <div class="ng-bg-glow ng-bg-glow--1" aria-hidden="true"></div>
+  <div class="ng-bg-glow ng-bg-glow--2" aria-hidden="true"></div>
+
+  <!-- ───────── TOPBAR ───────── -->
+ <!-- ───────── SUB-HUD (abaixo do main-header original) ───────── -->
+<div class="ng-sub-hud">
+  <div class="ng-sub-hud__left">
+    <span id="hud-avatar">🌱</span>
+    <span id="hud-name">Jogador</span>
+  </div>
+
+  <div class="ng-sub-hud__center">
+    <div class="ng-hud-chip">
+      <span class="ng-hud-chip__label">SCORE</span>
+      <span class="ng-hud-chip__value" id="hud-score">0</span>
     </div>
-    <div class="hud-center">
-      <div class="hud-stat">
-        <span class="hud-stat-label">SCORE</span>
-        <span id="hud-score" class="hud-stat-val">0</span>
-      </div>
-      <div class="hud-divider"></div>
-      <div class="hud-stat">
-        <span class="hud-stat-label">LEVEL</span>
-        <span id="hud-level" class="hud-stat-val">1</span>
-      </div>
-      <div class="hud-divider"></div>
-      <div class="hud-stat">
-        <span class="hud-stat-label">XP</span>
-        <span id="hud-xp" class="hud-stat-val">0</span>
-      </div>
+    <div class="ng-hud-sep"></div>
+    <div class="ng-hud-chip">
+      <span class="ng-hud-chip__label">LEVEL</span>
+      <span class="ng-hud-chip__value" id="hud-level">1</span>
     </div>
-    <div class="hud-right">
-      <div class="hud-streak">
-        🔥 <span id="hud-streak">0</span>
-      </div>
-      <button id="btn-menu" class="hud-btn">☰</button>
+    <div class="ng-hud-sep"></div>
+    <div class="ng-hud-chip">
+      <span class="ng-hud-chip__label">XP</span>
+      <span class="ng-hud-chip__value" id="hud-xp">0</span>
+    </div>
+    <div class="ng-hud-sep"></div>
+    <div class="ng-hud-chip">
+      <span class="ng-hud-chip__label">SEQUENCIA</span>
+      <span class="ng-hud-chip__value ng-hud-chip__value--fire" id="hud-streak">0</span>
+    </div>
+    <div class="ng-hud-sep"></div>
+    <div class="ng-hud-chip ng-hud-chip--coins" id="hud-coins-chip">
+      <span class="ng-hud-chip__label">MOEDAS</span>
+      <span class="ng-hud-chip__value ng-hud-chip__value--coin">◈ <span id="hud-coins">0</span></span>
     </div>
   </div>
 
-  <div class="xp-global-bar">
-    <div id="xp-global-fill" class="xp-gfill" style="width:0%"></div>
-    <span id="xp-global-label" class="xp-glabel">0 / 200 XP → Level 2</span>
+  <div class="ng-sub-hud__right">
+    <button class="ng-nav-btn ng-nav-btn--active" id="btn-nav-game">⚡ Jogo</button>
+    <button class="ng-nav-btn" id="btn-nav-ranked">🏆 Ranked</button>
+    <button class="ng-nav-btn" id="btn-nav-shop">◈ Loja</button>
+    <div class="ng-sub-hud__xp-rail">
+      <div class="ng-topbar__xp-fill" id="xp-bar-fill"></div>
+    </div>
+    <button id="btn-menu" class="ng-topbar__menu-btn">☰</button>
   </div>
+</div>
 
-  <div class="game-layout">
+  <!-- ───────── GRID PRINCIPAL 3 COLUNAS ───────── -->
+  <div class="ng-app-grid">
 
-    <aside class="game-aside">
-      <div class="char-panel" id="char-panel">
-        <div class="char-panel-bg"></div>
-        <div class="mascot-container">
-          <div class="mascot-body mascot-md" id="mascot-main">
-            <img 
-              id="mascot-img"
-              src="expressoesreciclinho/animado.png" 
-              alt="Recyclinho"
-              class="mascot-img"
-            />
-            <div class="mascot-aura" id="mascot-aura"></div>
-          </div>
-          <div class="speech-bubble speech-main" id="main-bubble">
-            Estou analisando suas ações... 🤖🌱
-          </div>
+    <!-- ─── COLUNA ESQUERDA ─── -->
+    <aside class="ng-col-left" aria-label="Mascote e missao ativa">
+
+      <div class="ng-mascot-zone">
+        <div class="ng-mascot-zone__ring" aria-hidden="true"></div>
+        <div class="ng-mascot-zone__ring ng-mascot-zone__ring--2" aria-hidden="true"></div>
+        <div id="mascot-main" class="ng-mascot-wrap">
+          <img
+            id="mascot-img"
+            class="ng-mascot-zone__img"
+            src="expressoesreciclinho/animado.png"
+            alt="Recyclinho mascote"
+          />
+          <div class="mascot-aura" id="mascot-aura"></div>
         </div>
-        <div class="char-mood-label" id="mood-label">
-          🤖 IA Observando
+        <div class="ng-mascot-zone__base" aria-hidden="true"></div>
+      </div>
+
+      <div class="ng-speech-panel" id="main-bubble" role="status" aria-live="polite">
+        <div class="ng-speech-panel__dot" aria-hidden="true"></div>
+        <p class="ng-speech-panel__text">Cada decisao importa. Qual sera a sua?</p>
+      </div>
+
+      <div class="ng-left-divider" aria-hidden="true">
+        <span></span><small>ACOES</small><span></span>
+      </div>
+
+      <button class="ng-btn-action-real" id="btn-register-action" aria-label="Registrar acao real">
+        <span class="ng-btn-action-real__icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </span>
+        <span class="ng-btn-action-real__label">Registrar acao real</span>
+        <span class="ng-btn-action-real__tag">EM BREVE</span>
+      </button>
+
+      <div class="ng-active-mission" id="active-mission-card">
+        <div class="ng-active-mission__header">
+          <span class="ng-active-mission__tag" id="am-category">MISSAO ATIVA</span>
+          <span class="ng-active-mission__timer">24h</span>
+        </div>
+        <p class="ng-active-mission__title" id="am-title">Carregando...</p>
+        <p class="ng-active-mission__desc" id="am-desc"></p>
+        <div class="ng-active-mission__reward">
+          <span id="am-xp">0</span> XP
+          <span class="ng-sep" aria-hidden="true">/</span>
+          +<span id="am-score">0</span> Score
+        </div>
+        <div class="ng-active-mission__actions">
+          <button class="ng-btn-complete" id="btn-mission-done">Completei</button>
+          <button class="ng-btn-skip" id="btn-mission-skip">Pular</button>
         </div>
       </div>
 
-      <div class="mission-panel" id="mission-panel">
-        <div class="panel-title">
-          <span class="panel-icon">🎯</span> MISSÃO ATIVA
-          <span class="mission-timer" id="mission-timer">24h</span>
-        </div>
-        <div id="active-mission" class="active-mission-card">
-          <div class="am-category" id="am-category">Carregando...</div>
-          <div class="am-title" id="am-title">Buscando missão...</div>
-          <div class="am-desc" id="am-desc"></div>
-          <div class="am-reward">
-            <span>🏆 <span id="am-xp">0</span> XP</span>
-            <span>⚡ +<span id="am-score">0</span> Score</span>
-          </div>
-          <div class="am-actions">
-            <button id="btn-mission-done" class="btn-success">✓ Completei!</button>
-            <button id="btn-mission-skip" class="btn-ghost-sm">✗ Pular</button>
-          </div>
-        </div>
-      </div>
     </aside>
 
-    <main class="game-main">
+    <!-- ─── COLUNA CENTRO ─── -->
+    <section class="ng-col-center" aria-label="Decisao atual">
 
-      <div class="decision-card" id="decision-card">
-        <div class="dc-header">
-          <span class="dc-icon">⚡</span>
-          <span class="dc-label">DECISÃO RÁPIDA</span>
-          <span class="dc-ai-tag">IA</span>
-        </div>
-        <p class="dc-question" id="dc-question">Carregando decisão...</p>
-        <div class="dc-context" id="dc-context"></div>
-        <div class="dc-choices" id="dc-choices"></div>
+      <div class="ng-decision-meta">
+        <span class="ng-decision-meta__tag" id="dc-tag">DECISAO RAPIDA</span>
+        <span class="ng-decision-meta__badge" aria-hidden="true">IA</span>
+        <span class="ng-decision-meta__counter" id="dc-counter"></span>
       </div>
 
-      <div class="env-card">
-        <div class="env-card-title">Score Ambiental</div>
-        <div class="env-score-display">
-          <div class="score-hexagon" id="score-hex">
-            <svg viewBox="0 0 100 100">
-              <polygon class="hex-bg" points="50,3 97,27 97,73 50,97 3,73 3,27"/>
-              <polygon class="hex-fill" id="hex-fill" points="50,3 97,27 97,73 50,97 3,73 3,27"/>
+      <div class="ng-decision-card" id="decision-card">
+        <div class="ng-decision-card__scan-line" aria-hidden="true"></div>
+        <h2 class="ng-decision-card__question" id="dc-question">Carregando decisao...</h2>
+        <p class="ng-decision-card__context" id="dc-context"></p>
+        <div class="ng-decision-card__choices" id="dc-choices" role="group" aria-label="Opcoes de resposta"></div>
+      </div>
+
+      <div class="ng-env-card">
+        <div class="ng-env-card__left">
+          <span class="ng-env-card__label">SCORE AMBIENTAL</span>
+          <span class="ng-env-card__number" id="env-score-num">0</span>
+          <span class="ng-env-card__class" id="env-class">--</span>
+        </div>
+        <div class="ng-env-card__bars">
+          <div class="ng-env-bar">
+            <span class="ng-env-bar__label">Plastico</span>
+            <div class="ng-env-bar__track"><div class="ng-env-bar__fill ng-env-bar__fill--a" id="bar-p"></div></div>
+          </div>
+          <div class="ng-env-bar">
+            <span class="ng-env-bar__label">Emissao</span>
+            <div class="ng-env-bar__track"><div class="ng-env-bar__fill ng-env-bar__fill--b" id="bar-e"></div></div>
+          </div>
+          <div class="ng-env-bar">
+            <span class="ng-env-bar__label">Desperdicio</span>
+            <div class="ng-env-bar__track"><div class="ng-env-bar__fill ng-env-bar__fill--c" id="bar-w"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ng-stats-strip" role="list" aria-label="Estatisticas">
+        <div class="ng-stat-tile" role="listitem">
+          <span class="ng-stat-tile__num" id="stat-missions">0</span>
+          <span class="ng-stat-tile__lbl">Missoes</span>
+        </div>
+        <div class="ng-stat-tile" role="listitem">
+          <span class="ng-stat-tile__num" id="stat-decisions">0</span>
+          <span class="ng-stat-tile__lbl">Boas decisoes</span>
+        </div>
+        <div class="ng-stat-tile" role="listitem">
+          <span class="ng-stat-tile__num" id="stat-streak">0</span>
+          <span class="ng-stat-tile__lbl">Sequencia</span>
+        </div>
+        <div class="ng-stat-tile" role="listitem">
+          <span class="ng-stat-tile__num" id="stat-impact">0</span>
+          <span class="ng-stat-tile__lbl">Impacto reduzido</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ─── COLUNA DIREITA ─── -->
+    <aside class="ng-col-right" aria-label="Missoes e historico">
+
+      <div class="ng-side-panel">
+        <div class="ng-side-panel__header">
+          <span class="ng-side-panel__title">MISSOES DO DIA</span>
+          <button class="ng-side-panel__refresh" id="btn-refresh-missions" aria-label="Gerar novas missoes">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>
             </svg>
-            <div class="hex-inner">
-              <span id="env-score-num" class="env-score-num">0</span>
-              <small>/100</small>
-            </div>
-          </div>
-          <div class="env-score-info">
-            <div class="env-class" id="env-class">—</div>
-            <div class="env-indicators">
-              <div class="ei">
-                <span>🧴 Plástico</span>
-                <div class="ei-bar"><div id="bar-p" class="ei-fill" style="width:0%"></div></div>
-              </div>
-              <div class="ei">
-                <span>🌫 Emissão</span>
-                <div class="ei-bar"><div id="bar-e" class="ei-fill warn" style="width:0%"></div></div>
-              </div>
-              <div class="ei">
-                <span>🗑 Desperdício</span>
-                <div class="ei-bar"><div id="bar-w" class="ei-fill danger" style="width:0%"></div></div>
-              </div>
-            </div>
-          </div>
+          </button>
         </div>
+        <div class="ng-missions-list" id="missions-list" role="list" aria-label="Lista de missoes"></div>
       </div>
 
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="sc-icon">🎯</div>
-          <div class="sc-val" id="stat-missions">0</div>
-          <div class="sc-label">Missões<br>Completas</div>
+      <div class="ng-side-panel">
+        <div class="ng-side-panel__header">
+          <span class="ng-side-panel__title">CONQUISTAS</span>
         </div>
-        <div class="stat-card">
-          <div class="sc-icon">⚡</div>
-          <div class="sc-val" id="stat-decisions">0</div>
-          <div class="sc-label">Boas<br>Decisões</div>
-        </div>
-        <div class="stat-card">
-          <div class="sc-icon">🔥</div>
-          <div class="sc-val" id="stat-streak">0</div>
-          <div class="sc-label">Sequência<br>Atual</div>
-        </div>
-        <div class="stat-card">
-          <div class="sc-icon">🌍</div>
-          <div class="sc-val" id="stat-impact">0</div>
-          <div class="sc-label">Impacto<br>Reduzido</div>
-        </div>
+        <div class="ng-achievements-grid" id="achievements-list" role="list" aria-label="Conquistas"></div>
       </div>
 
-    </main>
-
-    <aside class="game-right">
-      <div class="panel missions-list-panel">
-        <div class="panel-title"><span class="panel-icon">📋</span> MISSÕES DO DIA</div>
-        <div id="missions-list" class="missions-list"></div>
-        <button id="btn-refresh-missions" class="btn-refresh">↺ Novas missões</button>
+      <div class="ng-side-panel ng-side-panel--history">
+        <div class="ng-side-panel__header">
+          <span class="ng-side-panel__title">HISTORICO</span>
+        </div>
+        <div class="ng-history-log" id="action-history" role="log" aria-live="polite" aria-label="Historico de acoes"></div>
       </div>
 
-      <div class="panel history-panel">
-        <div class="panel-title"><span class="panel-icon">📜</span> HISTÓRICO</div>
-        <div id="action-history" class="action-history"></div>
-      </div>
     </aside>
 
+  </div><!-- /.ng-app-grid -->
+
+  <!-- ═══ VIEW: RANKED ═══ -->
+  <div class="ng-full-view ng-view--hidden" id="view-ranked" role="main" aria-label="Ranking">
+    <div class="ng-view-header">
+      <h2 class="ng-view-header__title">RANKING GLOBAL</h2>
+      <p class="ng-view-header__sub">Semana atual · Atualizado em tempo real</p>
+    </div>
+    <div class="ng-podium" id="ranked-podium"></div>
+    <div class="ng-league-banner" id="league-banner">
+      <div class="ng-league-banner__icon" id="lb-icon">&#127807;</div>
+      <div class="ng-league-banner__info">
+        <span class="ng-league-banner__label">SUA LIGA</span>
+        <span class="ng-league-banner__name" id="lb-name">Iniciante</span>
+      </div>
+      <div class="ng-league-banner__progress">
+        <span class="ng-league-banner__pts" id="lb-pts">0 pts</span>
+        <div class="ng-league-bar"><div class="ng-league-bar__fill" id="lb-bar"></div></div>
+        <span class="ng-league-banner__next" id="lb-next">300 pts p/ subir</span>
+      </div>
+    </div>
+    <div class="ng-ranked-table-wrap">
+      <div class="ng-ranked-table" id="ranked-table" role="list" aria-label="Ranking completo"></div>
+    </div>
   </div>
 
-  <div class="achievements-ribbon" id="achievements-ribbon">
-    <div class="ribbon-title"><span>🏅</span> CONQUISTAS</div>
-    <div id="achievements-list" class="achv-list"></div>
+  <!-- ═══ VIEW: LOJA ═══ -->
+  <div class="ng-full-view ng-view--hidden" id="view-shop" role="main" aria-label="Loja">
+    <div class="ng-view-header">
+      <h2 class="ng-view-header__title">◈ LOJA VERDE</h2>
+      <p class="ng-view-header__sub">Troque suas moedas por descontos reais em produtos sustentaveis</p>
+      <div class="ng-shop-balance">
+        <span class="ng-coin-icon">◈</span>
+        <span id="shop-coins-display">0</span>
+        <span class="ng-shop-balance__label">moedas disponiveis</span>
+      </div>
+    </div>
+    <div class="ng-shop-categories" role="tablist">
+      <button class="ng-shop-cat-btn ng-shop-cat-btn--active" data-cat="all" role="tab">Todos</button>
+      <button class="ng-shop-cat-btn" data-cat="food" role="tab">Alimentacao</button>
+      <button class="ng-shop-cat-btn" data-cat="eco" role="tab">Eco-produtos</button>
+      <button class="ng-shop-cat-btn" data-cat="transport" role="tab">Transporte</button>
+      <button class="ng-shop-cat-btn" data-cat="health" role="tab">Saude</button>
+    </div>
+    <div class="ng-shop-grid" id="shop-grid" role="list" aria-label="Produtos da loja"></div>
   </div>
+
+  <!-- ═══ MODAL: Compra ═══ -->
+  <div id="modal-purchase" class="modal modal--hidden" role="dialog" aria-modal="true" aria-label="Confirmar compra">
+    <div class="ng-modal-box ng-modal-box--purchase">
+      <div class="ng-modal-box__glow" aria-hidden="true"></div>
+      <div class="ng-modal-purchase__icon" id="mp-icon">&#127873;</div>
+      <p class="ng-modal-box__eyebrow">RESGATAR CUPOM</p>
+      <p class="ng-modal-box__title" id="mp-title">Produto</p>
+      <p class="ng-modal-purchase__partner" id="mp-partner"></p>
+      <p class="ng-modal-purchase__desc" id="mp-desc"></p>
+      <div class="ng-modal-purchase__cost">
+        <span class="ng-coin-icon">◈</span>
+        <span id="mp-cost">0</span>
+        <span>moedas</span>
+      </div>
+      <div class="ng-modal-purchase__balance">
+        Saldo: <span class="ng-coin-icon">◈</span><span id="mp-balance">0</span>
+      </div>
+      <div class="ng-modal-purchase__coupon ng-modal-purchase__coupon--hidden" id="mp-coupon-box">
+        <p class="ng-modal-purchase__coupon-label">SEU CUPOM</p>
+        <p class="ng-modal-purchase__coupon-code" id="mp-coupon-code">ECO-XXXX</p>
+        <p class="ng-modal-purchase__coupon-info" id="mp-coupon-info"></p>
+      </div>
+      <div class="ng-modal-purchase__btns" id="mp-btns">
+        <button class="ng-btn-modal-close ng-btn-modal-confirm" id="btn-purchase-confirm">Resgatar agora</button>
+        <button class="ng-btn-modal-cancel" id="btn-purchase-cancel">Cancelar</button>
+      </div>
+      <button class="ng-btn-modal-close" id="btn-purchase-close" style="display:none">Fechar</button>
+    </div>
+  </div>
+
+  <!-- Popup de moedas -->
+  <div id="coin-popup" class="ng-coin-popup ng-coin-popup--hidden" aria-hidden="true"></div>
 
 </section>
 
-<!-- MODALS -->
-<div id="modal-levelup" class="modal hidden">
-  <div class="modal-content levelup-modal">
-    <div class="lu-burst"></div>
-    <div class="mascot-body mascot-lg lu-mascot">
-      <div class="mascot-face">
-        <div class="mascot-eyes"><span class="eye"></span><span class="eye"></span></div>
-        <div class="mascot-mouth happy"></div>
-      </div>
-      <div class="mascot-arms">
-        <span class="arm arm-l">🎉</span>
-        <span class="arm arm-r">🎉</span>
-      </div>
-    </div>
-    <div class="lu-label">LEVEL UP!</div>
-    <div class="lu-level" id="lu-level">2</div>
-    <div class="lu-title" id="lu-title">Explorador Verde</div>
-    <div class="lu-unlock" id="lu-unlock"></div>
-    <button id="btn-lu-close" class="btn-primary">Continuar missão →</button>
+
+<!-- ══════════════════════════════════════════════════════
+     MODALS
+══════════════════════════════════════════════════════════ -->
+
+<!-- Level Up Modal -->
+<div id="modal-levelup" class="modal modal--hidden" role="dialog" aria-modal="true" aria-label="Level Up!">
+  <div class="modal__content modal__content--levelup">
+    <div class="levelup-modal__burst" aria-hidden="true"></div>
+    <!-- Mascote levelup com sprite real -->
+    <img
+      src="expressoesreciclinho/nivelup.png"
+      alt="Recyclinho comemorando level up"
+      class="levelup-modal__mascot-img"
+      aria-hidden="true"
+    />
+    <div class="levelup-modal__label">LEVEL UP!</div>
+    <div class="levelup-modal__level" id="lu-level">2</div>
+    <div class="levelup-modal__title" id="lu-title">Explorador Verde</div>
+    <div class="levelup-modal__unlock" id="lu-unlock"></div>
+    <button id="btn-lu-close" class="btn btn--primary">Continuar missão →</button>
   </div>
 </div>
 
-<div id="modal-menu" class="modal hidden">
-  <div class="modal-content menu-modal">
-    <h3 class="menu-title">♻ Menu</h3>
-    <div class="menu-profile">
-      <span id="menu-avatar" class="menu-avatar-big">🌱</span>
+<!-- Menu Modal -->
+<div id="modal-menu" class="modal modal--hidden" role="dialog" aria-modal="true" aria-label="Menu do jogador">
+  <div class="modal__content modal__content--menu">
+    <h3 class="menu-modal__title">♻ Menu</h3>
+    <div class="menu-modal__profile">
+      <span id="menu-avatar" class="menu-modal__avatar" aria-hidden="true">🌱</span>
       <div>
-        <div id="menu-player-name" class="menu-pname">Jogador</div>
-        <div id="menu-player-title" class="menu-ptitle">Iniciante</div>
+        <div id="menu-player-name" class="menu-modal__player-name">Jogador</div>
+        <div id="menu-player-title" class="menu-modal__player-title">Iniciante</div>
       </div>
     </div>
-    <div class="menu-stats-grid">
-      <div class="mg-stat"><span id="ms-score">0</span><small>Score</small></div>
-      <div class="mg-stat"><span id="ms-level">1</span><small>Level</small></div>
-      <div class="mg-stat"><span id="ms-xp">0</span><small>XP Total</small></div>
-      <div class="mg-stat"><span id="ms-missions">0</span><small>Missões</small></div>
+    <div class="menu-modal__stats" role="list">
+      <div class="menu-modal__stat" role="listitem"><span id="ms-score">0</span><small>Score</small></div>
+      <div class="menu-modal__stat" role="listitem"><span id="ms-level">1</span><small>Level</small></div>
+      <div class="menu-modal__stat" role="listitem"><span id="ms-xp">0</span><small>XP Total</small></div>
+      <div class="menu-modal__stat" role="listitem"><span id="ms-missions">0</span><small>Missões</small></div>
     </div>
-    <div class="menu-actions">
-      <button id="btn-menu-recs" class="menu-action-btn">💡 Ver Recomendações</button>
-      <button id="btn-menu-predict" class="menu-action-btn">🔮 Previsão de Impacto</button>
-      <button id="btn-menu-reset" class="menu-action-btn danger">🔄 Recomeçar Jogo</button>
+    <div class="menu-modal__actions">
+      <button id="btn-menu-recs"    class="menu-modal__action-btn">💡 Ver Recomendações</button>
+      <button id="btn-menu-predict" class="menu-modal__action-btn">🔮 Previsão de Impacto</button>
+      <button id="btn-menu-reset"   class="menu-modal__action-btn menu-modal__action-btn--danger">🔄 Recomeçar Jogo</button>
     </div>
-    <button id="btn-menu-close" class="btn-ghost-sm" style="width:100%;margin-top:8px">Fechar</button>
+    <button id="btn-menu-close" class="btn btn--ghost-sm" style="width:100%;margin-top:8px">Fechar</button>
   </div>
 </div>
 
-<div id="modal-recs" class="modal hidden">
-  <div class="modal-content recs-modal">
-    <div class="modal-header">
+<!-- Recommendations Modal -->
+<div id="modal-recs" class="modal modal--hidden" role="dialog" aria-modal="true" aria-label="Recomendações inteligentes">
+  <div class="modal__content modal__content--recs">
+    <div class="modal__header">
       <h3>💡 Recomendações Inteligentes <span class="ai-chip">IA</span></h3>
-      <button class="modal-close" data-modal="modal-recs">✕</button>
+      <button class="modal__close-btn" data-modal="modal-recs" aria-label="Fechar">✕</button>
     </div>
     <div id="recs-content" class="recs-content"></div>
   </div>
 </div>
 
-<div id="modal-predict" class="modal hidden">
-  <div class="modal-content predict-modal">
-    <div class="modal-header">
+<!-- Prediction Modal -->
+<div id="modal-predict" class="modal modal--hidden" role="dialog" aria-modal="true" aria-label="Previsão de impacto ambiental">
+  <div class="modal__content modal__content--predict">
+    <div class="modal__header">
       <h3>🔮 Previsão de Impacto</h3>
-      <button class="modal-close" data-modal="modal-predict">✕</button>
+      <button class="modal__close-btn" data-modal="modal-predict" aria-label="Fechar">✕</button>
     </div>
     <div id="predict-content" class="predict-content">
-      <canvas id="predict-chart" width="400" height="200"></canvas>
-      <div id="predict-text" class="predict-text"></div>
+      <canvas id="predict-chart" width="400" height="200" aria-label="Gráfico de previsão de score"></canvas>
+      <div id="predict-text" class="predict-content__text"></div>
     </div>
   </div>
 </div>
 
-<!-- FOOTER -->
-<footer class="main-footer">
-  <div class="footer-content">
-    <div class="footer-left">
-      <div class="footer-logo">♻ <span>ReCyclo</span></div>
-      <p class="footer-desc">
-        Um jogo de evolução sustentável onde cada decisão impacta o futuro do planeta.
+
+<!-- ══════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════ -->
+<footer class="main-footer" role="contentinfo">
+  
+  <div class="main-footer__content">
+
+    <!-- Branding -->
+    <div class="main-footer__brand">
+      <div class="main-footer__logo">♻ <span>ReCyclo</span></div>
+      <p class="main-footer__desc">
+        Evolua suas decisões e reduza seu impacto no planeta em tempo real.
       </p>
     </div>
-    <div class="footer-links">
+
+    <!-- Navegação -->
+    <nav class="main-footer__links" aria-label="Links do rodapé">
       <a href="index.html">Home</a>
       <a href="game1.html">ReCatch</a>
       <a href="game2.html">Recyclo Crush</a>
       <a href="sobre-nos.html">Sobre</a>
       <a href="faq.html">FAQ</a>
+    </nav>
+
+    <!-- Área dinâmica (game feeling) -->
+    <div class="main-footer__stats">
+      <div class="footer-stat">
+        <span>🌱 XP Total</span>
+        <strong id="footer-xp">0</strong>
+      </div>
+      <div class="footer-stat">
+        <span>♻ Impacto</span>
+        <strong id="footer-impact">0%</strong>
+      </div>
     </div>
+
   </div>
-  <div class="footer-bottom">
+
+
+  <!-- Bottom -->
+  <div class="main-footer__bottom">
     © 2026 ReCyclo. Todos os direitos reservados.
   </div>
+
 </footer>
 
 <script src="app.js"></script>
+<script src="game-views.js"></script>
 </body>
 </html>
