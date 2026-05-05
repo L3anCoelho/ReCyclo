@@ -1,0 +1,503 @@
+{
+  "sessionType": "non_project",
+  "connectors": [
+    {
+      "uid": "305b3b49-32ce-4b2b-a355-3492fe85d17f",
+      "name": "Ahrefs",
+      "brief": "Optimize SEO strategies, analyze keywords, and track backlink performance",
+      "enabled": false
+    },
+    {
+      "uid": "d669ca60-22cf-4e16-93d4-845071f9216c",
+      "name": "Airtable",
+      "brief": "Organize structured data, manage records, and collaborate with your team",
+      "enabled": false
+    },
+    {
+      "uid": "815b5a30-463e-4662-8da7-081e3b5dfc7d",
+      "name": "Anthropic",
+      "brief": "Access reliable AI assistant services with safe and intelligent conversations",
+      "enabled": false
+    },
+    {
+      "uid": "cf19c9d0-5f91-4e7a-af04-593febb5c80c",
+      "name": "Apify",
+      "brief": "Connect AI agents to thousands of web scrapers, crawlers, and automation tools from Apify Store.",
+      "enabled": false
+    },
+    {
+      "uid": "bb2a05d0-d728-48eb-b796-9b71e4f9c9ee",
+      "name": "Apollo",
+      "brief": "Automate B2B sales prospecting, lead generation, and deal execution",
+      "enabled": false
+    },
+    {
+      "uid": "219459c8-f04d-41af-9a0d-6f9159bf9205",
+      "name": "Asana",
+      "brief": "Streamline project and task management with Asana",
+      "enabled": false
+    },
+    {
+      "uid": "74d21d62-2ba7-4840-a918-c8327db5c711",
+      "name": "Atlassian",
+      "brief": "Search, create, and manage Jira, Confluence, and Compass",
+      "enabled": false
+    },
+    {
+      "uid": "c63d86db-4c98-483a-af0c-f94721d7f2a5",
+      "name": "Canva",
+      "brief": "Discover, autofill, and export Canva designs in one place",
+      "enabled": false
+    },
+    {
+      "uid": "e08b2bda-a4a6-488a-b397-c72f0923bdf4",
+      "name": "ClickUp",
+      "brief": "Automate task management and project workflows with ClickUp",
+      "enabled": false
+    },
+    {
+      "uid": "9b37aa72-4089-4f25-b774-122860ba61fa",
+      "name": "Close",
+      "brief": "Automate your sales leads pipeline with Close CRM",
+      "enabled": false
+    },
+    {
+      "uid": "119e6b13-c2e3-48db-b568-f82191de6b4e",
+      "name": "Cloudflare",
+      "brief": "Manage Cloudflare Workers, build applications, and deploy online resources",
+      "enabled": false
+    },
+    {
+      "uid": "80bca437-287e-4407-adf0-1a0b298528e5",
+      "name": "Cloudflare API",
+      "brief": "Automate and manage your web infrastructure with the Cloudflare API",
+      "enabled": false
+    },
+    {
+      "uid": "bbec86c8-29f6-4149-9bba-d5c66bd6a701",
+      "name": "Cohere",
+      "brief": "Build enterprise AI applications and optimize text processing workflows",
+      "enabled": false
+    },
+    {
+      "uid": "0fc956e1-3d91-4e38-9f04-158adf39e99f",
+      "name": "CoinGecko",
+      "brief": "Access real-time market data, prices, trends, and onchain analytics",
+      "enabled": false
+    },
+    {
+      "uid": "a5dc4c89-0d47-4494-9654-af4049f95e1b",
+      "name": "Context7",
+      "brief": "Access to current, library-specific technical documentation and implementation examples",
+      "enabled": false
+    },
+    {
+      "uid": "7a739d5e-b40b-4c56-8192-51a7541a25fa",
+      "name": "Crypto.com",
+      "brief": "Stream live market data for prices, volumes, order books, and trends",
+      "enabled": false
+    },
+    {
+      "uid": "888c4ef0-4ed7-4f8b-ade0-55a86fc531dc",
+      "name": "Dify",
+      "brief": "Connect Dify and orchestrate AI-powered workflows across your favorite tools",
+      "enabled": false
+    },
+    {
+      "uid": "2918a878-d84d-47af-94ce-4967b72506f5",
+      "name": "Dropbox",
+      "brief": "Manage files, folders, and sharing in Dropbox",
+      "enabled": false
+    },
+    {
+      "uid": "23181678-c628-4c53-9a77-36778a36bbe5",
+      "name": "ElevenLabs",
+      "brief": "Generate realistic voices, clone speech, and create custom audio content",
+      "enabled": false
+    },
+    {
+      "uid": "3cb9f78b-b53a-49ef-b65e-b56eeddd641d",
+      "name": "Explorium",
+      "brief": "Access comprehensive business and contact data for AI-powered insights",
+      "enabled": false
+    },
+    {
+      "uid": "abb9ed36-e693-44ab-be3d-1f5c3bb02294",
+      "name": "Firecrawl",
+      "brief": "Unlock powerful web scraping, crawling, and search capabilities",
+      "enabled": false
+    },
+    {
+      "uid": "1b62b634-58e9-4b49-b327-339cc5aaeaf5",
+      "name": "Fireflies",
+      "brief": "Automate meeting transcription and conversation insights",
+      "enabled": false
+    },
+    {
+      "uid": "5c305236-d14e-43f7-93ff-b288afd26f09",
+      "name": "Flux",
+      "brief": "Create stunning AI-generated images with diverse artistic styles and concepts",
+      "enabled": false
+    },
+    {
+      "uid": "bbb0df76-66bd-4a24-ae4f-2aac4750d90b",
+      "name": "GitHub",
+      "brief": "Manage repositories, track code changes, and collaborate on team projects",
+      "enabled": false
+    },
+    {
+      "uid": "9444d960-ab7e-450f-9cb9-b9467fb0adda",
+      "name": "Gmail",
+      "brief": "Draft replies, search your inbox, and summarize email threads instantly",
+      "enabled": false
+    },
+    {
+      "uid": "dd5abf31-7ad3-4c0b-9b9a-f0a576645baf",
+      "name": "Google Calendar",
+      "brief": "Understand your schedule, manage events, and optimize your time effectively",
+      "enabled": false
+    },
+    {
+      "uid": "f8900a57-4bd7-46cc-83a3-5ebd2420a817",
+      "name": "Google Drive",
+      "brief": "Access your files, search instantly, and let Manus help you manage documents intelligently",
+      "enabled": false
+    },
+    {
+      "uid": "4157dedf-1326-4be8-9295-51416c7dba62",
+      "name": "Google Gemini",
+      "brief": "Process multimodal content including text, images, and code seamlessly",
+      "enabled": false
+    },
+    {
+      "uid": "0d21d573-1ee0-484b-8e91-aed6534dbb19",
+      "name": "Granola",
+      "brief": "Search, summarize and gather insights from every meeting transcript",
+      "enabled": false
+    },
+    {
+      "uid": "491cde51-195c-4e72-96ea-8d80557c3b58",
+      "name": "Grok",
+      "brief": "Access real-time information and engage in intelligent conversations",
+      "enabled": false
+    },
+    {
+      "uid": "c183add9-c22c-4199-b7f2-d885571afa3a",
+      "name": "HeyGen",
+      "brief": "Create lifelike AI avatars, generate voices, and produce realistic videos",
+      "enabled": false
+    },
+    {
+      "uid": "062ba883-f91d-46f2-b1d1-864924865703",
+      "name": "HeyGen API",
+      "brief": "Generate AI-powered videos with realistic avatars with HeyGen API",
+      "enabled": false
+    },
+    {
+      "uid": "b389f747-6221-41aa-9dbb-732a97a02ea6",
+      "name": "HubSpot",
+      "brief": "Search CRM data, track contacts, and analyze sales and marketing insights",
+      "enabled": false
+    },
+    {
+      "uid": "bdfa81ea-c0ca-4022-bba1-805c48b583c1",
+      "name": "Hugging Face",
+      "brief": "Explore AI models, access datasets, and discover the latest research trends",
+      "enabled": false
+    },
+    {
+      "uid": "a4fc87c3-c8bf-4344-a776-3b42b0546f13",
+      "name": "Hume",
+      "brief": "Create expressive text-to-speech audio with Hume AI",
+      "enabled": false
+    },
+    {
+      "uid": "4b899211-fd12-410e-a8d2-264a409cbc78",
+      "name": "Instagram",
+      "brief": "Generate and publish Posts, Stories, or Reels to Instagram",
+      "enabled": false
+    },
+    {
+      "uid": "9777f7bd-4ca3-431a-98d6-a7ed5221dd81",
+      "name": "Instagram Creator Marketplace",
+      "brief": "Discover creators that fit your brand’s reach, topics, and style",
+      "enabled": false
+    },
+    {
+      "uid": "73f5f556-978a-4f8a-85b3-ef2eec4473e5",
+      "name": "Intercom",
+      "brief": "Access customer conversations, analyze feedback, and generate actionable insights",
+      "enabled": false
+    },
+    {
+      "uid": "c8298c13-6d9a-4847-9f1f-1523952fddbd",
+      "name": "JSONBin.io",
+      "brief": "Store and manage JSON data with fast API access for development projects",
+      "enabled": false
+    },
+    {
+      "uid": "45d392d3-d308-4cdb-8a2d-5d249bcec594",
+      "name": "Jam",
+      "brief": "Analyze screen recordings, context, and issues automatically",
+      "enabled": false
+    },
+    {
+      "uid": "92262486-6778-4451-9921-8c29c9dfa60a",
+      "name": "Jotform",
+      "brief": "Create, manage, and collect data through powerful online forms",
+      "enabled": false
+    },
+    {
+      "uid": "99474cab-58bf-47ae-af0e-43c156703be9",
+      "name": "Kling",
+      "brief": "Generate high-quality AI video content and bring creative visual concepts to life",
+      "enabled": false
+    },
+    {
+      "uid": "94c74572-5587-4b9e-8614-2b2cef7413b6",
+      "name": "LINE",
+      "brief": "Connect to LINE Official Accounts for automated messaging",
+      "enabled": false
+    },
+    {
+      "uid": "982c169d-0c89-4dbd-95fd-30b49cc2f71e",
+      "name": "Linear",
+      "brief": "Track issues, manage projects, and organize workflows across your team",
+      "enabled": false
+    },
+    {
+      "uid": "331ff697-8348-4ed7-a596-7df98740fc1f",
+      "name": "Mailchimp Marketing",
+      "brief": "Manage audiences, send campaigns, and track email marketing performance",
+      "enabled": false
+    },
+    {
+      "uid": "f8405590-5602-4fee-bfd6-f221623e6f72",
+      "name": "Make",
+      "brief": "Turn Make workflows into AI tools for intelligent automation execution",
+      "enabled": false
+    },
+    {
+      "uid": "c073ede4-35a7-4c89-8158-c9b40c489932",
+      "name": "Meta Ads Manager",
+      "brief": "Automate ads insights and optimization to save hours and maximize profits",
+      "enabled": false
+    },
+    {
+      "uid": "9fe14dac-4288-4371-91a8-86a36051a865",
+      "name": "Metabase",
+      "brief": "Access Metabase data analytics with caching and response optimization",
+      "enabled": false
+    },
+    {
+      "uid": "1987d07e-eb26-479f-867b-ad4b79c80d11",
+      "name": "MiniMax",
+      "brief": "Generate speech, music, images, and videos with MiniMax",
+      "enabled": false
+    },
+    {
+      "uid": "be268223-40b2-4f3c-a907-c12eb1699283",
+      "name": "My Browser",
+      "brief": "Access the web on your own browser",
+      "enabled": false
+    },
+    {
+      "uid": "9a0c8590-c0d9-498b-9b3d-bd0df0dbc134",
+      "name": "Neon",
+      "brief": "Use natural language to query and manage Postgres",
+      "enabled": false
+    },
+    {
+      "uid": "9c27c684-2f4f-4d33-8fcf-51664ea15c00",
+      "name": "Notion",
+      "brief": "Search workspace content, update notes, and automate workflows in Notion",
+      "enabled": false
+    },
+    {
+      "uid": "942ea72c-09f6-46f0-b4b3-f9890a6edbc5",
+      "name": "OpenAI",
+      "brief": "Leverage GPT model series for intelligent text generation and processing",
+      "enabled": false
+    },
+    {
+      "uid": "c55a74cf-a236-4eda-8885-365d336cae4b",
+      "name": "OpenRouter",
+      "brief": "Access multiple AI models and manage API calls through unified interface",
+      "enabled": false
+    },
+    {
+      "uid": "4bca3029-d276-4644-898d-578a723361b2",
+      "name": "Outlook Calendar",
+      "brief": "Schedule, view, and manage your Outlook events just with a prompt",
+      "enabled": false
+    },
+    {
+      "uid": "d485c6dd-4939-40fb-9c4a-c9821971468b",
+      "name": "Outlook Mail",
+      "brief": "Write, search, and manage your Outlook emails seamlessly within Manus",
+      "enabled": false
+    },
+    {
+      "uid": "e90398ef-c17d-46e8-86d6-0bd98642cbbb",
+      "name": "PayPal for Business",
+      "brief": "Manage transactions, invoices, and business operations efficiently",
+      "enabled": false
+    },
+    {
+      "uid": "2a574fdc-89ab-4ad7-b334-e2c156201b6f",
+      "name": "Perplexity",
+      "brief": "Search real-time information and get accurate answers with reliable citations",
+      "enabled": false
+    },
+    {
+      "uid": "356d5bc1-fb9f-4fa1-babb-05039dc09d63",
+      "name": "Playwright",
+      "brief": "Automate browsers for testing, scraping, and more with Playwright",
+      "enabled": false
+    },
+    {
+      "uid": "376008de-cd2a-4bfb-93aa-2652b8585c8e",
+      "name": "Polygon.io",
+      "brief": "Access real-time and historical market data for stocks, forex, crypto, and options",
+      "enabled": false
+    },
+    {
+      "uid": "63e9fd2a-2804-4509-897a-a9544c127b2b",
+      "name": "PopHIVE",
+      "brief": "Access public health data from PopHIVE dashboards",
+      "enabled": false
+    },
+    {
+      "uid": "89dac2c3-74d0-4f94-86d1-0ee6c4566193",
+      "name": "PostHog",
+      "brief": "Perform product analytics, manage feature flags, and run experiments",
+      "enabled": false
+    },
+    {
+      "uid": "4c55391d-38ea-4a36-a670-a59a1c7680cb",
+      "name": "Prisma Postgres",
+      "brief": "Connect to Postgres, manage databases, and query data securely and efficiently",
+      "enabled": false
+    },
+    {
+      "uid": "a104e1ac-73e5-482f-96e6-8b95f4756f27",
+      "name": "RevenueCat",
+      "brief": "Manage subscription apps, control entitlements, and automate workflows",
+      "enabled": false
+    },
+    {
+      "uid": "838d5e1c-7dd4-4782-9429-c459126707c7",
+      "name": "Sentry",
+      "brief": "Review errors, analyze root causes, and suggest fixes for rapid issue resolution",
+      "enabled": false
+    },
+    {
+      "uid": "f7f15fe8-15cf-4fb9-a546-720f16dcf5e6",
+      "name": "Serena",
+      "brief": "Unlock efficient code management with Serena’s semantic and editing tools",
+      "enabled": false
+    },
+    {
+      "uid": "700c656f-b4a4-4e39-a886-a20782d99b6f",
+      "name": "Similarweb",
+      "brief": "Analyze website traffic and gain competitive market intelligence insights",
+      "enabled": false
+    },
+    {
+      "uid": "001e6a99-5585-4b3e-b8cb-533fe24d7788",
+      "name": "Slack",
+      "brief": "Read and write Slack conversations in Manus",
+      "enabled": false
+    },
+    {
+      "uid": "29986b52-7cbb-4d5e-9263-dd0abacaf28d",
+      "name": "Stripe",
+      "brief": "Streamline business billing, payments, and account management",
+      "enabled": false
+    },
+    {
+      "uid": "fb659ead-d821-40cc-ab35-1cad9af13649",
+      "name": "Stripe API",
+      "brief": "Programmatically manage transactions, and automate billing for your business",
+      "enabled": false
+    },
+    {
+      "uid": "84ab78ef-139c-48ff-acd4-cba718b8a484",
+      "name": "Supabase",
+      "brief": "Manage Supabase projects, query databases, and organize data efficiently",
+      "enabled": false
+    },
+    {
+      "uid": "86a04f98-35cf-4099-9044-ab851a473cf5",
+      "name": "Supabase API",
+      "brief": "Manage Postgres databases with authentication, file storage, and more",
+      "enabled": false
+    },
+    {
+      "uid": "2900673c-afaa-4dfa-901d-00a6b3f7275e",
+      "name": "Todoist",
+      "brief": "Organize your to-dos, streamline projects, and boost productivity",
+      "enabled": false
+    },
+    {
+      "uid": "3db6c7f4-0ce6-4b76-baad-c6e3c4882acd",
+      "name": "Tripo AI",
+      "brief": "Transform text or images into detailed 3D models quickly and efficiently",
+      "enabled": false
+    },
+    {
+      "uid": "658a2969-b74c-42c5-a7b3-9b98128ff724",
+      "name": "Typeform",
+      "brief": "Create forms, collect responses, and manage webhooks",
+      "enabled": false
+    },
+    {
+      "uid": "a50c5d31-af5e-4e01-a992-057663a7ee1f",
+      "name": "Vercel",
+      "brief": "Manage Vercel projects, deployments, and domains",
+      "enabled": false
+    },
+    {
+      "uid": "1d489fb9-0601-4ea7-9942-b866657178c1",
+      "name": "Webflow",
+      "brief": "Manage Webflow sites, edit pages, and organize your CMS content with ease",
+      "enabled": false
+    },
+    {
+      "uid": "d0fa4acf-7cf6-4402-bd84-82a850342a79",
+      "name": "Wix",
+      "brief": "Search website data, access content, and automate workflows within Wix",
+      "enabled": false
+    },
+    {
+      "uid": "7c635638-0b9f-40f4-b5c8-6f2762416d79",
+      "name": "Xero",
+      "brief": "View financial data, generate reports, and gain personalized business insights",
+      "enabled": false
+    },
+    {
+      "uid": "433d2fe0-e56d-42b2-8625-9996eab0bb1d",
+      "name": "Zapier",
+      "brief": "Connect Manus and automate workflows across thousands of apps",
+      "enabled": false
+    },
+    {
+      "uid": "40ecbda4-5aaf-4e95-bf54-679299ea1c19",
+      "name": "monday.com",
+      "brief": "Coordinate tasks, manage boards, and streamline your project workflows",
+      "enabled": false
+    },
+    {
+      "uid": "d6b4170a-4001-450d-823a-287dfd9716a7",
+      "name": "n8n",
+      "brief": "Create automated workflows and seamlessly connect different applications",
+      "enabled": false
+    },
+    {
+      "uid": "f7bbbff0-61fe-458b-975a-3e2f6a91269c",
+      "name": "tl;dv",
+      "brief": "Streamline meeting workflows with transcriptions and call highlights",
+      "enabled": false
+    }
+  ]
+}

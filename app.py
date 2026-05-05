@@ -125,8 +125,7 @@ def is_strong_password(pwd):
 @app.route('/')
 def index():
     """Página inicial: mostra o login."""
-    return render_template('login.html')
-
+    return render_template('index.html')
 
 @app.route('/login', methods=['POST'])
 def login():

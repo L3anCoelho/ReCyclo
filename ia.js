@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════
    ReCyclo — ia.js
    Lógica do IA Scan · Reconhecimento de produtos
-   Integração com Anthropic API (Claude)
+   Integração com OpenAI API (ChatGPT)
 ══════════════════════════════════════════════════════ */
 
 // ─── ESTADO GLOBAL ───────────────────────────
@@ -22,13 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Sincroniza XP/level do jogo principal (se houver)
 function syncXPFromGame() {
-  // Tenta ler progresso do jogo do localStorage
   try {
     const gameState = localStorage.getItem('recyclo_state');
     if (gameState) {
       const state = JSON.parse(gameState);
-      // Se quiser exibir o XP do jogador no header da IA, podemos ler:
-      // state.xp, state.level, state.score
+      // state.xp, state.level, state.score disponíveis se necessário
     }
   } catch (e) { /* silent */ }
 }
@@ -95,7 +93,7 @@ function readFile(file) {
     showError('Imagem muito grande (máximo 10MB).');
     return;
   }
-  currentImageMime = file.type === 'image/png' ? 'image/png'
+  currentImageMime = file.type === 'image/png'  ? 'image/png'
                    : file.type === 'image/webp' ? 'image/webp'
                    : 'image/jpeg';
   const reader = new FileReader();
@@ -161,7 +159,6 @@ function animateRing(score) {
   const circumference = 188.5;
   const fill  = document.getElementById('score-ring-fill');
   const label = document.getElementById('score-val');
-  // Cores no estilo do ReCyclo (vermelho/amarelo/verde neon)
   const color = score < 35 ? '#f87171' : score < 65 ? '#fbbf24' : '#4ade80';
 
   fill.style.stroke = color;
@@ -169,8 +166,8 @@ function animateRing(score) {
     fill.style.strokeDashoffset = circumference - (score / 100) * circumference;
   }, 80);
 
-  label.textContent  = score;
-  label.style.color  = color;
+  label.textContent = score;
+  label.style.color = color;
 }
 
 // ─── COPIAR RESULTADO ────────────────────────
@@ -360,7 +357,7 @@ function escapeHtml(s) {
     .replace(/'/g, '&#039;');
 }
 
-// ─── ANALISAR (chama a API Anthropic) ────────
+// ─── ANALISAR (chama a API OpenAI) ───────────
 async function analyze(mode) {
   if (!apiKey) { showModal(); return; }
   hideResults();
@@ -433,44 +430,58 @@ Regras:
   try {
     if (mode === 'photo') {
       const ctx = document.getElementById('photo-context').value.trim();
-      messages = [{
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: currentImageMime, data: currentImageBase64 } },
-          { type: 'text',  text: 'Analise este produto' + (ctx ? ` — contexto: ${ctx}` : '') + '. Retorne o JSON.' }
-        ]
-      }];
+      messages = [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image_url',
+              image_url: {
+                url: `data:${currentImageMime};base64,${currentImageBase64}`
+              }
+            },
+            {
+              type: 'text',
+              text: 'Analise este produto' + (ctx ? ` — contexto: ${ctx}` : '') + '. Retorne o JSON.'
+            }
+          ]
+        }
+      ];
 
     } else if (mode === 'url') {
       const url = document.getElementById('url-input').value.trim();
       const ctx = document.getElementById('url-context').value.trim();
-      messages = [{
-        role: 'user',
-        content: `Produto: ${url}${ctx ? `\nContexto: ${ctx}` : ''}\n\nAnalise e retorne o JSON.`
-      }];
+      messages = [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content: `Produto: ${url}${ctx ? `\nContexto: ${ctx}` : ''}\n\nAnalise e retorne o JSON.`
+        }
+      ];
 
     } else {
       const desc = document.getElementById('text-desc').value.trim();
       const cat  = selectedCat ? `\nCategoria: ${selectedCat}` : '';
-      messages = [{
-        role: 'user',
-        content: `Produto descrito pelo usuário: "${desc}"${cat}\n\nAnalise e retorne o JSON.`
-      }];
+      messages = [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content: `Produto descrito pelo usuário: "${desc}"${cat}\n\nAnalise e retorne o JSON.`
+        }
+      ];
     }
 
-    // Chamada à API Anthropic
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    // Chamada à API OpenAI
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
+        'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model:      'claude-sonnet-4-20250514',
+        model:      'gpt-4o',
         max_tokens: 1500,
-        system:     systemPrompt,
         messages
       })
     });
@@ -481,7 +492,7 @@ Regras:
     }
 
     const data   = await response.json();
-    const raw    = data.content.map(b => b.text || '').join('');
+    const raw    = data.choices[0].message.content;
     const clean  = raw.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean);
 

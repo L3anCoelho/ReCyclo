@@ -1114,7 +1114,7 @@ document.addEventListener("click", () => {
 }, { once: true });
 
 function goMenu() {
-  window.location.href = "index.html";
+  window.location.href = "telainicial.html";
 }
 
 function goGame2() {
