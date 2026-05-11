@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ — ReCyclo</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ─── RESET & BASE ─────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --green:        #22c55e;
+  --green-dim:    rgba(34, 197, 94, 0.15);
+  --green-glow:   rgba(34, 197, 94, 0.35);
+  --green-border: rgba(34, 197, 94, 0.25);
+  --bg:           #020617;
+  --surface:      #0b1628;
+  --surface-2:    #0f172a;
+  --text:         #e2e8f0;
+  --text-muted:   #64748b;
+  --font-display: 'Orbitron', sans-serif;
+  --font-body:    'Exo 2', sans-serif;
+  --radius:       14px;
+  --transition:   0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* subtle noise texture */
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(34,197,94,0.08), transparent);
+}
+
+/* ─── SCROLLBAR ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--green-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--green); }
+
+/* ─── HEADER ────────────────────────────────────────────── */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(2, 6, 23, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--green-border);
+  padding: 22px 24px;
+  text-align: center;
+}
+
+header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  color: var(--green);
+  letter-spacing: 3px;
+  text-shadow: 0 0 30px rgba(34,197,94,0.4);
+}
+
+/* ─── CONTAINER ─────────────────────────────────────────── */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px 64px;
+}
+
+/* ─── SECTION LABEL ─────────────────────────────────────── */
+.section-label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 4px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--green-border);
+}
+
+/* ─── FAQ ITEM ──────────────────────────────────────────── */
+.faq-item {
+  position: relative;
+  background: var(--surface-2);
+  border: 1px solid var(--green-border);
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: var(--transition);
+
+  /* staggered entrance animation */
+  opacity: 0;
+  transform: translateY(18px);
+  animation: fadeUp 0.5s var(--transition) forwards;
+}
+
+.faq-item:nth-child(1)  { animation-delay: 0.05s; }
+.faq-item:nth-child(2)  { animation-delay: 0.10s; }
+.faq-item:nth-child(3)  { animation-delay: 0.15s; }
+.faq-item:nth-child(4)  { animation-delay: 0.20s; }
+.faq-item:nth-child(5)  { animation-delay: 0.25s; }
+.faq-item:nth-child(6)  { animation-delay: 0.30s; }
+.faq-item:nth-child(7)  { animation-delay: 0.35s; }
+.faq-item:nth-child(8)  { animation-delay: 0.40s; }
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* left accent bar */
+.faq-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--green);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.faq-item:hover,
+.faq-item.open {
+  border-color: rgba(34,197,94,0.5);
+  box-shadow: 0 0 28px rgba(34,197,94,0.12), 0 4px 20px rgba(0,0,0,0.4);
+  transform: translateY(-2px);
+}
+
+.faq-item:hover::before,
+.faq-item.open::before {
+  opacity: 1;
+}
+
+/* ─── QUESTION ROW ──────────────────────────────────────── */
+.faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 22px;
+  font-weight: 600;
+  font-size: 0.97rem;
+  color: var(--green);
+  user-select: none;
+}
+
+.faq-question-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+/* chevron icon */
+.faq-chevron {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--green);
+  opacity: 0.6;
+  transition: transform var(--transition), opacity var(--transition);
+}
+
+.faq-item.open .faq-chevron {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+/* ─── ANSWER PANEL ──────────────────────────────────────── */
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.3s ease;
+  color: #94a3b8;
+  font-size: 0.93rem;
+  font-weight: 300;
+  line-height: 1.75;
+  padding: 0 22px;
+}
+
+.faq-item.open .faq-answer {
+  max-height: 300px;
+  padding: 0 22px 22px;
+}
+
+/* divider between question and answer */
+.faq-divider {
+  height: 1px;
+  background: var(--green-border);
+  margin: 0 22px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.faq-item.open .faq-divider {
+  transform: scaleX(1);
+}
+
+/* ─── AI CHIP ────────────────────────────────────────────── */
+.ai-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--green);
+  color: #000;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.ai-chip::before {
+  content: '●';
+  font-size: 7px;
+  animation: pulse 1.4s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ─── FOOTER ────────────────────────────────────────────── */
+footer {
+  text-align: center;
+  padding: 28px 20px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--green-border);
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>❓ FAQ — RECICLAGEM INTELIGENTE</h1>
+</header>
+
+<div class="container">
+
+  <div class="section-label">perguntas frequentes</div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-question-text">♻️ O que é reciclagem?</span>
+      <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="faq-divider"></div>
+    <div class="faq-answer">
+      Reciclagem é o processo de transformar resíduos em novos produtos,
+      reduzindo o uso de recursos naturais e o impacto ambiental.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-question-text">🗑️ O que pode ser reciclado?</span>
+      <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="faq-divider"></div>
+    <div class="faq-answer">
+      Os principais materiais recicláveis são:
+      papel, plástico, vidro e metal. Porém, eles devem estar limpos e secos.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-question-text">⚠️ O que NÃO pode ser reciclado?</span>
+      <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="faq-divider"></div>
+    <div class="faq-answer">
+      Papel higiênico, fraldas, restos de comida, espelhos e cerâmicas geralmente não são recicláveis.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-question-text">💡 Preciso lavar os recicláveis?</span>
+      <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="faq-divider"></div>
+    <div class="faq-answer">
+      Sim! Não precisa estar perfeito, mas deve estar limpo o suficiente para não contaminar outros materiais.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-question-text">🤖 Como a IA do ReCyclo ajuda? <span class="ai-chip">IA</span></span>
+      <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="faq-divider"></div>
+    <div class="faq-answer">
+      A IA analisa seus hábitos, sugere melhorias e ajuda você a tomar decisões mais sustentáveis no dia a dia.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-question-text">🎮 O que são missões no ReCyclo?</span>
+      <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="faq-divider"></div>
+    <div class="faq-answer">
+      São desafios diários que incentivam ações sustentáveis, como reciclar corretamente ou reduzir desperdícios.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-question-text">🏆 Como ganho pontos?</span>
+      <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="faq-divider"></div>
+    <div class="faq-answer">
+      Você ganha pontos ao completar missões, tomar boas decisões e melhorar seu impacto ambiental.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-question-text">🌍 Qual o impacto da reciclagem?</span>
+      <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="faq-divider"></div>
+    <div class="faq-answer">
+      Reduz a poluição, economiza energia, preserva recursos naturais e diminui o volume de lixo nos aterros.
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 ReCyclo — Aprenda, jogue e transforme o planeta 🌱
+</footer>
+
+<script>
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      // close all
+      document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+      // toggle clicked
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IA Scan — ReCyclo</title>
+
+  <!-- ── Google Fonts (mesmas do projeto) ── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600&family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="ia.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     NAVIGATION — Header global (mesmo padrão do index)
+══════════════════════════════════════════════════════════ -->
+<header class="main-header" role="banner">
+  <div class="main-header__left">
+    <a href="index.html" class="main-header__logo" aria-label="ReCyclo — Página Inicial">
+      <span class="main-header__logo-icon" aria-hidden="true">♻</span>
+      <span class="main-header__logo-text">ReCyclo</span>
+    </a>
+  </div>
+
+  <nav class="main-header__nav" role="navigation" aria-label="Navegação principal">
+    <a href="index.html"     class="nav-btn">Home</a>
+    <a href="game1.html"     class="nav-btn">ReCatch</a>
+    <a href="game2.html"     class="nav-btn">Recyclo Crush</a>
+    <a href="ia.html"        class="nav-btn nav-btn--ia nav-btn--active">IA Scan</a>
+    <a href="sobre-nos.html" class="nav-btn nav-btn--alt">Sobre Nós</a>
+    <a href="faq.html"       class="nav-btn nav-btn--alt">FAQ</a>
+  </nav>
+</header>
+
+<!-- Background partículas (mesmo do resto do site) -->
+<canvas id="particle-bg" aria-hidden="true"></canvas>
+
+<!-- Toast de notificação -->
+<div id="toast-container" role="status" aria-live="polite">
+  <div class="toast" id="toast">✓ Ação concluída</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     MAIN — IA Scan
+══════════════════════════════════════════════════════════ -->
+<main class="ia-page">
+
+  <!-- ── HERO ── -->
+  <section class="ia-hero">
+    <div class="ia-hero__bg-grid"></div>
+    <div class="ia-hero__glow ia-hero__glow--1"></div>
+    <div class="ia-hero__glow ia-hero__glow--2"></div>
+
+    <div class="ia-hero__inner">
+      <div class="ia-hero__text">
+        <span class="step-tag">SISTEMA DE APOIO INTELIGENTE</span>
+        <h1 class="ia-hero__title">
+          Reconhecimento de <em>Resíduos</em><br>
+          com Inteligência Artificial
+        </h1>
+        <p class="ia-hero__desc">
+          Envie uma foto, cole um link ou descreva um produto.
+          A IA analisa o impacto ambiental, calcula o eco-score e sugere
+          alternativas mais sustentáveis — tudo em tempo real.
+        </p>
+
+        <div class="ia-hero__features">
+          <div class="ia-feat">
+            <span class="ia-feat__icon">📷</span>
+            <span class="ia-feat__label">Foto</span>
+          </div>
+          <div class="ia-feat">
+            <span class="ia-feat__icon">🔗</span>
+            <span class="ia-feat__label">Link</span>
+          </div>
+          <div class="ia-feat">
+            <span class="ia-feat__icon">✏️</span>
+            <span class="ia-feat__label">Texto</span>
+          </div>
+          <div class="ia-feat ia-feat--xp">
+            <span class="ia-feat__icon">⚡</span>
+            <span class="ia-feat__label">+50 XP</span>
+          </div>
+        </div>
+
+        <div class="ia-hero__cta">
+          <a href="#scan-area" class="btn btn--primary">Começar Análise →</a>
+          <a href="index.html" class="btn btn--secondary">← Voltar ao Jogo</a>
+        </div>
+      </div>
+
+      <!-- Mascote do Recyclinho -->
+      <div class="ia-hero__mascot">
+        <div class="ia-hero__mascot-glow"></div>
+        <img src="expressoesreciclinho/animado.png"
+             alt="Recyclinho — IA Assistant"
+             class="ia-hero__mascot-img" />
+        <div class="ia-hero__bubble">
+          Olá! Sou o <strong>Recyclinho IA</strong>.
+          Vamos identificar o impacto do seu produto?
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ── SCAN AREA ── -->
+  <section class="ia-scan" id="scan-area">
+
+    <div class="ia-section-head">
+      <span class="step-tag">FERRAMENTA IA</span>
+      <h2 class="ia-section-title">Escolha seu <em>método de análise</em></h2>
+    </div>
+
+    <div class="ia-card">
+
+      <!-- Tabs -->
+      <div class="ia-tabs">
+        <button class="ia-tab ia-tab--active" id="tab-photo" onclick="switchTab('photo')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="5" width="18" height="14" rx="2"/>
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M9 5V4a1 1 0 011-1h4a1 1 0 011 1v1"/>
+          </svg>
+          <span>Foto</span>
+        </button>
+        <button class="ia-tab" id="tab-url" onclick="switchTab('url')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+          </svg>
+          <span>Link</span>
+        </button>
+        <button class="ia-tab" id="tab-text" onclick="switchTab('text')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          <span>Descrever</span>
+        </button>
+      </div>
+
+      <!-- Painel: Foto -->
+      <div class="ia-panel ia-panel--active" id="panel-photo">
+        <div class="ia-upload" id="upload-zone">
+          <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)" />
+          <div class="ia-upload__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <div class="ia-upload__title">Arraste uma foto do produto</div>
+          <div class="ia-upload__sub"><strong>Clique aqui</strong> para selecionar</div>
+          <div class="ia-upload__tip">JPG · PNG · WEBP — até 10MB</div>
+        </div>
+        <img id="preview-img" alt="Prévia do produto" />
+
+        <div class="ia-field">
+          <label class="ia-label">Contexto adicional <span class="ia-label__opt">(opcional)</span></label>
+          <textarea class="ia-textarea" id="photo-context" rows="2"
+            placeholder="Ex: garrafa plástica de refrigerante, embalagem de sabão em pó..."></textarea>
+        </div>
+
+        <button class="ia-analyze" onclick="analyze('photo')" id="btn-photo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <div class="ia-spinner" id="spinner-photo"></div>
+          <span id="btn-photo-text">Analisar Produto</span>
+          <span class="ia-xp-tag">+50 XP</span>
+        </button>
+      </div>
+
+      <!-- Painel: URL -->
+      <div class="ia-panel" id="panel-url">
+        <div class="ia-banner">
+          <span class="ia-banner__icon">🔗</span>
+          <p>Cole o link de qualquer produto de e-commerce. A IA identifica o produto e busca alternativas sustentáveis.</p>
+        </div>
+
+        <div class="ia-url-group">
+          <input type="url" class="ia-input" id="url-input"
+            placeholder="https://www.amazon.com.br/produto..." />
+          <button class="ia-btn-paste" onclick="pasteUrl()">📋 Colar</button>
+        </div>
+        <div class="ia-hint">✓ Funciona com Amazon, Mercado Livre, Shopee, Magazine Luiza e outros</div>
+
+        <div class="ia-field">
+          <label class="ia-label">O que você quer substituir? <span class="ia-label__opt">(opcional)</span></label>
+          <textarea class="ia-textarea" id="url-context" rows="2"
+            placeholder="Ex: quero algo com embalagem reciclável, sem plástico..."></textarea>
+        </div>
+
+        <button class="ia-analyze" onclick="analyze('url')" id="btn-url">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a10 10 0 110 20 10 10 0 010-20z"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+          <div class="ia-spinner" id="spinner-url"></div>
+          <span id="btn-url-text">Analisar Link</span>
+          <span class="ia-xp-tag">+50 XP</span>
+        </button>
+      </div>
+
+      <!-- Painel: Texto -->
+      <div class="ia-panel" id="panel-text">
+        <div class="ia-banner">
+          <span class="ia-banner__icon">✏️</span>
+          <p>Descreva o produto com suas próprias palavras — marca, material, embalagem. Quanto mais detalhes, melhor a análise.</p>
+        </div>
+
+        <label class="ia-label">Selecione uma categoria</label>
+        <div class="ia-cat-row" id="cat-row">
+          <button class="ia-cat" onclick="setCat(this,'Alimentos e bebidas')">🍃 Alimentos</button>
+          <button class="ia-cat" onclick="setCat(this,'Limpeza doméstica')">🧹 Limpeza</button>
+          <button class="ia-cat" onclick="setCat(this,'Cosméticos e higiene pessoal')">🌸 Cosméticos</button>
+          <button class="ia-cat" onclick="setCat(this,'Roupas e moda')">👕 Moda</button>
+          <button class="ia-cat" onclick="setCat(this,'Eletrônicos')">💡 Eletrônicos</button>
+          <button class="ia-cat" onclick="setCat(this,'Embalagens e descartáveis')">📦 Embalagens</button>
+        </div>
+
+        <label class="ia-label">Descrição do produto</label>
+        <textarea class="ia-textarea" id="text-desc" rows="5"
+          placeholder="Ex: garrafa plástica PET de 2 litros de refrigerante da marca X, comprada no supermercado..."></textarea>
+
+        <button class="ia-analyze" onclick="analyze('text')" id="btn-text">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="ia-spinner" id="spinner-text"></div>
+          <span id="btn-text-text">Analisar Produto</span>
+          <span class="ia-xp-tag">+50 XP</span>
+        </button>
+      </div>
+
+      <!-- Loading -->
+      <div class="ia-loading" id="loading-state">
+        <div class="ia-loading__anim">
+          <div class="ia-loading__leaf"></div>
+          <div class="ia-loading__leaf"></div>
+          <div class="ia-loading__leaf"></div>
+        </div>
+        <div class="ia-loading__title">IA Analisando o produto...</div>
+        <div class="ia-loading__sub">Identificando impacto ambiental e buscando alternativas</div>
+      </div>
+
+      <!-- Erro -->
+      <div class="ia-error" id="error-box"></div>
+
+      <!-- Resultados -->
+      <div class="ia-results" id="results-area">
+        <div class="ia-results__head">
+          <span class="step-tag">ANÁLISE COMPLETA</span>
+          <h3 class="ia-results__title">Diagnóstico Ambiental</h3>
+        </div>
+
+        <!-- Produto detectado -->
+        <div class="ia-detected">
+          <div class="ia-detected__label">PRODUTO IDENTIFICADO</div>
+          <div class="ia-detected__name" id="res-name">—</div>
+          <div class="ia-detected__desc" id="res-desc">—</div>
+          <div class="ia-chips" id="res-chips"></div>
+
+          <!-- Anel eco-score -->
+          <div class="ia-score">
+            <div class="ia-score__ring">
+              <svg viewBox="0 0 72 72">
+                <circle class="ia-score__bg"   cx="36" cy="36" r="30"/>
+                <circle class="ia-score__fill" id="score-ring-fill" cx="36" cy="36" r="30"
+                  stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
+              </svg>
+              <div class="ia-score__num" id="score-val">—</div>
+            </div>
+            <div class="ia-score__info">
+              <div class="ia-score__title">Eco-score do produto</div>
+              <div class="ia-score__sub">0 = impacto alto · 100 = totalmente sustentável</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alternativas -->
+        <div class="ia-alts-title">ALTERNATIVAS MAIS SUSTENTÁVEIS</div>
+        <div class="ia-alts-grid" id="alts-grid"></div>
+
+        <!-- Dica -->
+        <div class="ia-tip" id="tip-box" style="display:none;">
+          <span class="ia-tip__icon">💡</span>
+          <div class="ia-tip__text" id="tip-text"></div>
+        </div>
+
+        <!-- Ações -->
+        <div class="ia-actions">
+          <button class="ia-action-btn" onclick="copyResult()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2"/>
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+            </svg>
+            Copiar Resultado
+          </button>
+          <button class="ia-action-btn" onclick="newAnalysis()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="1 4 1 10 7 10"/>
+              <path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
+            </svg>
+            Nova Análise
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ── HISTÓRICO ── -->
+  <section class="ia-history" id="history-section" style="display:none;">
+    <div class="ia-section-head ia-section-head--row">
+      <div>
+        <span class="step-tag">SEU PROGRESSO</span>
+        <h2 class="ia-section-title">Análises <em>recentes</em></h2>
+      </div>
+      <button class="ia-clear-btn" onclick="clearHistory()">🗑 Limpar histórico</button>
+    </div>
+    <div class="ia-history-list" id="history-list"></div>
+  </section>
+
+
+  <!-- ── COMO FUNCIONA ── -->
+  <section class="ia-how">
+    <div class="ia-section-head">
+      <span class="step-tag">SIMPLES E RÁPIDO</span>
+      <h2 class="ia-section-title">Como funciona o <em>IA Scan</em></h2>
+    </div>
+
+    <div class="ia-how-grid">
+      <div class="ia-how-card">
+        <div class="ia-how__num">01</div>
+        <div class="ia-how__icon">📷</div>
+        <h3>Envie</h3>
+        <p>Tire uma foto, cole um link ou descreva o produto.</p>
+      </div>
+      <div class="ia-how-card">
+        <div class="ia-how__num">02</div>
+        <div class="ia-how__icon">🤖</div>
+        <h3>IA Analisa</h3>
+        <p>Claude identifica e calcula o eco-score do produto.</p>
+      </div>
+      <div class="ia-how-card">
+        <div class="ia-how__num">03</div>
+        <div class="ia-how__icon">🌿</div>
+        <h3>Receba</h3>
+        <p>Sugestões reais de alternativas sustentáveis no Brasil.</p>
+      </div>
+      <div class="ia-how-card ia-how-card--featured">
+        <div class="ia-how__num">04</div>
+        <div class="ia-how__icon">⚡</div>
+        <h3>Ganhe XP</h3>
+        <p>+50 XP por análise no sistema do ReCyclo.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Chave de API
+══════════════════════════════════════════════════════════ -->
+<div class="ia-modal" id="modal" style="display:none;">
+  <div class="ia-modal__box">
+    <div class="ia-modal__head">
+      <span class="main-header__logo-icon">♻</span>
+      <span class="main-header__logo-text">ReCyclo <span class="ai-chip">IA</span></span>
+    </div>
+    <h2 class="ia-modal__title">Configurar Chave da API</h2>
+    <p class="ia-modal__desc">
+      Para usar o IA Scan, você precisa de uma chave da Anthropic API.
+      Sua chave fica salva apenas no seu navegador.
+    </p>
+    <input type="password" class="ia-modal__input" id="api-key-input" placeholder="sk-ant-..." />
+    <button class="ia-modal__save" onclick="saveKey()">Salvar Chave</button>
+    <p class="ia-modal__note">
+      Não tem? <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Crie uma chave aqui</a>
+    </p>
+  </div>
+</div>
+
+<!-- Botão flutuante para abrir o modal de API -->
+<button class="ia-key-fab" onclick="showModal()" title="Configurar chave de API">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="8" cy="15" r="4"/>
+    <path d="M12 15h8M16 11v8"/>
+  </svg>
+</button>
+
+
+<!-- ══════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════ -->
+<footer class="main-footer">
+  <div class="main-footer__content">
+    <div>
+      <div class="main-footer__logo">♻ ReCyclo</div>
+      <p class="main-footer__desc">
+        IA Scan — Sistema de Apoio Inteligente. Reconheça produtos
+        e descubra alternativas sustentáveis em tempo real.
+      </p>
+    </div>
+    <div class="main-footer__links">
+      <a href="index.html">Home</a>
+      <a href="game1.html">ReCatch</a>
+      <a href="game2.html">Recyclo Crush</a>
+      <a href="ia.html">IA Scan</a>
+      <a href="sobre-nos.html">Sobre</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+  <div class="main-footer__bottom">
+    © 2026 ReCyclo · Powered by Claude AI
+  </div>
+</footer>
+
+
+<!-- Background particle script (mesmo do site) -->
+<script>
+(function(){
+  const c = document.getElementById('particle-bg');
+  if (!c) return;
+  const x = c.getContext('2d');
+  let W, H, p;
+  function r(){ W = c.width = innerWidth; H = c.height = innerHeight; }
+  r(); addEventListener('resize', r);
+  p = Array.from({length: 60}, () => ({
+    x: Math.random() * W, y: Math.random() * H,
+    r: Math.random() * 1.5 + 0.3,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+    a: Math.random() * 0.5 + 0.1
+  }));
+  (function d(){
+    x.clearRect(0, 0, W, H);
+    p.forEach(o => {
+      x.beginPath();
+      x.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+      x.fillStyle = `rgba(74, 222, 128, ${o.a})`;
+      x.fill();
+      o.x += o.vx; o.y += o.vy;
+      if (o.x < 0) o.x = W; if (o.x > W) o.x = 0;
+      if (o.y < 0) o.y = H; if (o.y > H) o.y = 0;
+    });
+    requestAnimationFrame(d);
+  })();
+})();
+</script>
+
+<script src="ia.js"></script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>♻ ReCyclo Crush — Salve o Planeta!</title>
+  <link rel="stylesheet" href="game2.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body data-theme="forest">
+
+<!-- ░░░ MAIN HEADER (UNIFICADO) ░░░ -->
+<header class="main-header">
+  <div class="main-header-left">
+    <a href="telainicial.html" class="main-header-logo">
+      <span class="logo-icon">♻</span>
+      <span class="logo-text">ReCyclo</span>
+    </a>
+  </div>
+  <nav class="main-header-nav">
+    <a href="telainicial.html" class="nav-btn">Home</a>
+    <a href="game1.html" class="nav-btn">ReCatch</a>
+    <a href="game2.html" class="nav-btn">Recyclo Crush</a>
+    <a href="sobre-nos.html" class="nav-btn alt">Sobre Nós</a>
+    <a href="faq.html" class="nav-btn alt">FAQ</a>
+  </nav>
+</header>
+
+<!-- ===== TELA INICIAL ===== -->
+<div id="screenMenu" class="screen active">
+  <div class="menu-bg-anim">
+    <span class="float-item" style="--d:0s;--x:10%;--y:20%">♻</span>
+    <span class="float-item" style="--d:1s;--x:70%;--y:60%">🌿</span>
+    <span class="float-item" style="--d:2s;--x:40%;--y:80%">🌱</span>
+    <span class="float-item" style="--d:0.5s;--x:85%;--y:15%">🥤</span>
+    <span class="float-item" style="--d:1.5s;--x:20%;--y:70%">📦</span>
+    <span class="float-item" style="--d:3s;--x:60%;--y:30%">🌊</span>
+  </div>
+  <div class="menu-card">
+    <div class="menu-mascot">🌍</div>
+    <h1 class="menu-title">ReCyclo<br><span>Crush</span></h1>
+    <p class="menu-subtitle">Combine recicláveis, salve o planeta!</p>
+    <div class="menu-stars">⭐⭐⭐</div>
+    <button class="btn-play pulse-anim" onclick="showScreen('screenLevelSelect')">▶ Jogar</button>
+    <button class="btn-secondary" onclick="showScreen('screenRanking')">🏆 Ranking Online</button>
+    <button class="btn-secondary" onclick="showScreen('screenThemes')">🎨 Temas de Tabuleiro</button>
+    <div class="menu-footer">
+      <small>v2.0 · ReCyclo · Salvando o planeta 🌱</small>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SELEÇÃO DE NÍVEL ===== -->
+<div id="screenLevelSelect" class="screen">
+  <div class="screen-header">
+    <button class="btn-back" onclick="showScreen('screenMenu')">← Voltar</button>
+    <h2>Selecione o Nível</h2>
+  </div>
+  <div class="level-map">
+    <div class="level-path"></div>
+    <div id="levelGrid" class="level-grid"></div>
+  </div>
+</div>
+
+<!-- ===== JOGO ===== -->
+<div id="screenGame" class="screen">
+  <div class="game-wrapper">
+
+    <aside class="game-sidebar left">
+      <div class="sidebar-card lives-card">
+        <div class="sidebar-label">VIDAS</div>
+        <div id="livesDisplay" class="lives-display"></div>
+      </div>
+      <div class="sidebar-card score-card">
+        <div class="sidebar-label">PONTOS</div>
+        <div id="scoreDisplay" class="score-display">0</div>
+        <div class="score-bar-wrap">
+          <div id="scoreBar" class="score-bar"></div>
+        </div>
+        <div class="score-target" id="scoreTarget">Meta: 0</div>
+      </div>
+      <div class="sidebar-card moves-card">
+        <div class="sidebar-label">MOVIMENTOS</div>
+        <div id="movesDisplay" class="moves-display">30</div>
+      </div>
+      <div class="sidebar-card level-info-card">
+        <div class="sidebar-label">NÍVEL</div>
+        <div id="levelDisplay" class="level-display">1</div>
+      </div>
+    </aside>
+
+    <main class="game-center">
+      <div class="board-container" id="boardContainer">
+        <div class="board-bg-layer" id="boardBgLayer"></div>
+        <div id="gameBoard" class="game-board"></div>
+        <canvas id="particleCanvas" class="particle-canvas"></canvas>
+      </div>
+      <div class="board-controls">
+        <button class="btn-icon" onclick="pauseGame()" title="Pausar">⏸</button>
+        <button class="btn-icon" onclick="showScreen('screenMenu')" title="Menu">🏠</button>
+        <button class="btn-icon" id="shuffleBtn" onclick="shuffleBoard()" title="Embaralhar">🔀</button>
+      </div>
+    </main>
+
+    <aside class="game-sidebar right">
+      <div class="sidebar-card">
+        <div class="sidebar-label">NÍVEL XP</div>
+        <div class="xp-bar-wrap">
+          <div id="xpBar" class="xp-bar"></div>
+        </div>
+        <div id="xpDisplay" class="xp-display">0 XP</div>
+      </div>
+      <div class="sidebar-card objectives-card">
+        <div class="sidebar-label">OBJETIVOS</div>
+        <div id="objectivesDisplay" class="objectives-display"></div>
+      </div>
+      <div class="sidebar-card combo-card">
+        <div class="sidebar-label">COMBO</div>
+        <div id="comboDisplay" class="combo-display">×1</div>
+        <div class="combo-meter-wrap">
+          <div id="comboMeter" class="combo-meter"></div>
+        </div>
+      </div>
+      <div class="sidebar-card boosters-card">
+        <div class="sidebar-label">PODERES</div>
+        <div class="boosters-grid">
+          <button class="booster-btn" id="boosterBomb"    onclick="activateBooster('bomb')"    title="Bomba Reciclável">💣</button>
+          <button class="booster-btn" id="boosterRainbow" onclick="activateBooster('rainbow')" title="Arco-íris Verde">🌈</button>
+          <button class="booster-btn" id="boosterTime"    onclick="activateBooster('time')"    title="+5 Movimentos">⏰</button>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<!-- ===== RANKING ===== -->
+<div id="screenRanking" class="screen">
+  <div class="screen-header">
+    <button class="btn-back" onclick="showScreen('screenMenu')">← Voltar</button>
+    <h2>🏆 Ranking Online</h2>
+  </div>
+  <div class="ranking-container">
+    <div class="ranking-tabs">
+      <button class="rank-tab active" onclick="switchRankTab('global', this)">🌍 Global</button>
+      <button class="rank-tab" onclick="switchRankTab('weekly', this)">📅 Semanal</button>
+      <button class="rank-tab" onclick="switchRankTab('daily', this)">☀️ Diário</button>
+    </div>
+    <div class="ranking-form">
+      <input id="rankName" type="text" placeholder="Seu nome no ranking..." maxlength="20">
+      <button onclick="submitScore()">📤 Enviar Minha Pontuação</button>
+    </div>
+    <div id="rankingList" class="ranking-list">
+      <div class="rank-loading">🌿 Carregando ranking...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TEMAS ===== -->
+<div id="screenThemes" class="screen">
+  <div class="screen-header">
+    <button class="btn-back" onclick="showScreen('screenMenu')">← Voltar</button>
+    <h2>🎨 Temas Ambientais</h2>
+  </div>
+  <div class="themes-grid">
+    <div class="theme-card active" data-theme="forest" onclick="selectTheme('forest', this)">
+      <div class="theme-preview forest-preview">🌲🌿🍃</div>
+      <div class="theme-name">Floresta Viva</div>
+      <div class="theme-desc">Verde profundo, natureza exuberante</div>
+      <div class="theme-badge">✓ Ativo</div>
+    </div>
+    <div class="theme-card" data-theme="ocean" onclick="selectTheme('ocean', this)">
+      <div class="theme-preview ocean-preview">🌊🐠🐚</div>
+      <div class="theme-name">Oceano Limpo</div>
+      <div class="theme-desc">Azul profundo, vida marinha</div>
+    </div>
+    <div class="theme-card" data-theme="desert" onclick="selectTheme('desert', this)">
+      <div class="theme-preview desert-preview">🏜️🌵☀️</div>
+      <div class="theme-name">Deserto Solar</div>
+      <div class="theme-desc">Energia solar, tons quentes</div>
+    </div>
+    <div class="theme-card" data-theme="arctic" onclick="selectTheme('arctic', this)">
+      <div class="theme-preview arctic-preview">❄️🐻‍❄️🏔️</div>
+      <div class="theme-name">Ártico Gelado</div>
+      <div class="theme-desc">Branco cristalino, gelo puro</div>
+    </div>
+    <div class="theme-card" data-theme="city" onclick="selectTheme('city', this)">
+      <div class="theme-preview city-preview">🏙️♻️🌱</div>
+      <div class="theme-name">Cidade Verde</div>
+      <div class="theme-desc">Urbano sustentável, neon eco</div>
+    </div>
+    <div class="theme-card" data-theme="cosmos" onclick="selectTheme('cosmos', this)">
+      <div class="theme-preview cosmos-preview">🌌🪐⭐</div>
+      <div class="theme-name">Cosmos Eco</div>
+      <div class="theme-desc">Galáxia sustentável, roxo cósmico</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAIS ===== -->
+
+<div id="modalPause" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h2>⏸ Pausado</h2>
+    <p>O planeta espera por você! 🌍</p>
+    <button class="btn-play"      onclick="resumeGame()">▶ Continuar</button>
+    <button class="btn-secondary" onclick="showScreen('screenMenu')">🏠 Menu</button>
+    <button class="btn-secondary" onclick="restartLevel()">🔄 Reiniciar</button>
+  </div>
+</div>
+
+<div id="modalWin" class="modal-overlay hidden">
+  <div class="modal-box win-modal">
+    <div class="win-stars" id="winStars"></div>
+    <h2>🎉 Incrível!</h2>
+    <p id="winMessage">Você salvou o planeta!</p>
+    <div class="win-score-display" id="winScore"></div>
+    <button class="btn-play"      onclick="nextLevel()">▶ Próximo Nível</button>
+    <button class="btn-secondary" onclick="showScreen('screenLevelSelect')">📋 Níveis</button>
+  </div>
+</div>
+
+<div id="modalLose" class="modal-overlay hidden">
+  <div class="modal-box lose-modal">
+    <div class="lose-icon">😢</div>
+    <h2>Sem movimentos!</h2>
+    <p id="loseMessage">O planeta precisa de você!</p>
+    <div class="lose-score" id="loseScore"></div>
+    <button class="btn-play"      onclick="restartLevel()">🔄 Tentar Novamente</button>
+    <button class="btn-secondary" onclick="showScreen('screenLevelSelect')">📋 Níveis</button>
+  </div>
+</div>
+
+<div id="modalNoLives" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="no-lives-icon">💔</div>
+    <h2>Sem Vidas!</h2>
+    <p>Aguarde ou peça ajuda a um amigo</p>
+    <div id="lifeTimer" class="life-timer">⏰ Próxima vida em: 00:30</div>
+    <button class="btn-play"      onclick="refillLives()">♻ Recarregar Vidas</button>
+    <button class="btn-secondary" onclick="showScreen('screenMenu')">🏠 Menu</button>
+  </div>
+</div>
+
+<div id="floatingScores" class="floating-scores-container"></div>
+<div id="sparkleContainer" class="sparkle-container"></div>
+
+<script src="game2.js"></script>
+</body>
+</html>
